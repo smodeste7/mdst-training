@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Modeste Training">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="Mon programme One Punch Man — 6 mois de progression">
+
+  <!-- Inline manifest via JS -->
+  <script>
+    // Register PWA manifest inline
+    const manifestData = {
+      name: "Modeste Training",
+      short_name: "Modeste Training",
+      description: "Mon programme One Punch Man — 6 mois",
+      start_url: "/mdst-training/",
+      display: "standalone",
+      background_color: "#080808",
+      theme_color: "#080808",
+      orientation: "portrait",
+      icons: [
+        { src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23080808'/%3E%3Ccircle cx='256' cy='256' r='200' fill='none' stroke='%23E8192C' stroke-width='18'/%3E%3Ctext x='256' y='200' font-family='serif' font-weight='900' font-size='160' fill='%23E8192C' text-anchor='middle' dominant-baseline='middle'%3E%F0%9F%A5%8A%3C/text%3E%3Ctext x='256' y='360' font-family='Arial Black' font-weight='900' font-size='58' fill='%23FFD700' text-anchor='middle'%3ETRAINING%3C/text%3E%3C/svg%3E", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/manifest+json'});
+    const manifestURL = URL.createObjectURL(blob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = manifestURL;
+    document.head.appendChild(link);
+  </script>
+
+  <!-- Apple touch icon inline SVG via canvas -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Generate apple-touch-icon via canvas and inject
+      const canvas = document.createElement('canvas');
+      canvas.width = 180; canvas.height = 180;
+      const ctx = canvas.getContext('2d');
+      // Background
+      ctx.fillStyle = '#080808';
+      const r = 36;
+      ctx.beginPath();
+      ctx.moveTo(r,0); ctx.lineTo(180-r,0);
+      ctx.quadraticCurveTo(180,0,180,r);
+      ctx.lineTo(180,180-r); ctx.quadraticCurveTo(180,180,180-r,180);
+      ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
+      ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+      ctx.closePath(); ctx.fill();
+      // Red circle
+      ctx.strokeStyle = '#E8192C'; ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.arc(90,90,72,0,Math.PI*2); ctx.stroke();
+      // Fist emoji
+      ctx.font = '68px serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('🥊', 90, 78);
+      // Text
+      ctx.fillStyle = '#FFD700';
+      ctx.font = 'bold 16px Arial';
+      ctx.fillText('TRAINING', 90, 148);
+      // Inject
+      const iconLink = document.createElement('link');
+      iconLink.rel = 'apple-touch-icon';
+      iconLink.href = canvas.toDataURL('image/png');
+      document.head.appendChild(iconLink);
+    });
+  </script>
+<title>Modeste Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#E8192C; --yellow:#FFD700; --blue:#4a9eff; --green:#5dba74; --orange:#ff8c42; --purple:#cc44ff;
+  --black:#080808; --dark:#111; --card:#191919; --card2:#1f1f1f; --border:#252525; --border2:#2e2e2e;
+  --text:#f0f0f0; --muted:#777; --muted2:#444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;background:rgba(8,8,8,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;}
+.nav-tab{flex:1;padding:14px 4px;text-align:center;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+.nav-tab.active{color:var(--yellow);border-bottom-color:var(--yellow);}
+.nav-tab:hover:not(.active){color:var(--text);}
+
+/* PAGES */
+.page{display:none;min-height:80vh;}
+.page.active{display:block;}
+
+/* HERO */
+.hero{position:relative;padding:36px 20px 24px;text-align:center;overflow:hidden;}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(232,25,44,.18) 0%,transparent 70%);pointer-events:none;}
+.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--yellow);margin-bottom:8px;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,14vw,84px);line-height:.88;letter-spacing:3px;}
+.hero-title .r{color:var(--red);}
+.hero-meta{margin-top:10px;font-size:12px;color:var(--muted);font-weight:500;}
+.hero-bar{width:48px;height:3px;background:var(--red);margin:14px auto 0;border-radius:2px;}
+.pgbar-wrap{height:3px;background:var(--border);}
+.pgbar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));transition:width .3s;}
+
+/* PHASE BAND */
+.phase-band{padding:14px 14px 6px;max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px;border-left:3px solid;}
+.phase-band.ph1{border-color:var(--yellow);}.phase-band.ph2{border-color:var(--green);}.phase-band.ph3{border-color:var(--red);}.phase-band.ph4{border-color:var(--orange);}.phase-band.ph5{border-color:var(--purple);}
+.ph-num{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;opacity:.22;}
+.ph1 .ph-num{color:var(--yellow);}.ph2 .ph-num{color:var(--green);}.ph3 .ph-num{color:var(--red);}.ph4 .ph-num{color:var(--orange);}.ph5 .ph-num{color:var(--purple);}
+.ph-info .ph-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+.ph-info .ph-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
+.ph1 .ph-title{color:var(--yellow);}.ph2 .ph-title{color:var(--green);}.ph3 .ph-title{color:var(--red);}.ph4 .ph-title{color:var(--orange);}.ph5 .ph-title{color:var(--purple);}
+.ph-info .ph-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* WEEK CARD */
+.week-wrap{max-width:600px;margin:0 auto;padding:0 10px 6px;}
+.week-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;overflow:hidden;}
+.week-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;user-select:none;transition:background .15s;}
+.week-hdr:hover{background:rgba(255,255,255,.02);}
+.wh-left{display:flex;align-items:center;gap:10px;}
+.w-num{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;color:var(--muted2);min-width:30px;}
+.w-info .w-label{font-size:13px;font-weight:700;}
+.w-info .w-dates{font-size:11px;color:var(--muted);margin-top:1px;}
+.wh-right{display:flex;align-items:center;gap:8px;}
+.w-progress-ring{position:relative;width:34px;height:34px;flex-shrink:0;}
+.w-progress-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border2);stroke-width:3;}
+.ring-fill{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .4s;}
+.w-progress-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--muted);}
+.w-chevron{color:var(--muted2);font-size:10px;transition:transform .22s;}
+.week-card.open .w-chevron{transform:rotate(180deg);}
+.week-body{display:none;border-top:1px solid var(--border);}
+.week-card.open .week-body{display:block;}
+
+/* DAY */
+.day-row{border-bottom:1px solid var(--border);}
+.day-row:last-child{border-bottom:none;}
+.day-stripe-bar{height:2px;}
+.s-red{background:var(--red);}.s-yellow{background:var(--yellow);}.s-green{background:var(--green);}.s-blue{background:var(--blue);}.s-orange{background:var(--orange);}
+.day-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px 4px;}
+.day-hdr-left{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.day-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;}
+.day-date{font-size:11px;color:var(--muted);}
+.day-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:3px;}
+.b-red{background:rgba(232,25,44,.12);color:var(--red);}
+.b-yellow{background:rgba(255,215,0,.1);color:var(--yellow);}
+.b-green{background:rgba(93,186,116,.1);color:var(--green);}
+.b-blue{background:rgba(74,158,255,.1);color:var(--blue);}
+.b-orange{background:rgba(255,140,66,.12);color:var(--orange);}
+.sport-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(255,140,66,.15);color:var(--orange);cursor:pointer;border:1px solid rgba(255,140,66,.3);}
+.day-done-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(93,186,116,.15);color:var(--green);display:none;}
+.day-done-badge.visible{display:inline-block;}
+.day-hdr-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+
+/* DAY ACTIONS BAR */
+.day-actions{display:flex;gap:6px;padding:4px 14px 8px;flex-wrap:wrap;}
+.act-btn{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:5px;border:1px dashed var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;}
+.act-btn:hover{border-color:var(--muted);color:var(--text);}
+.act-btn.sport-add{border-color:rgba(255,140,66,.4);color:var(--orange);}
+.act-btn.sport-add:hover{background:rgba(255,140,66,.1);}
+.act-btn.sport-remove{border-color:rgba(232,25,44,.3);color:var(--red);}
+.act-btn.sport-remove:hover{background:rgba(232,25,44,.08);}
+
+/* EXERCISES */
+.ex-list{padding:2px 14px 10px;}
+.ex-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);position:relative;}
+.ex-item:last-child{border-bottom:none;}
+.ex-check{width:19px;height:19px;border-radius:4px;border:2px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.ex-check.checked{background:var(--green);border-color:var(--green);}
+.ex-check.checked::after{content:'✓';font-size:10px;font-weight:700;color:#000;}
+.ex-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.ex-name-wrap{flex:1;min-width:0;}
+.ex-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ex-target-wrap{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+/* Editable target */
+.ex-target-input{width:44px;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--yellow);font-family:'Bebas Neue',sans-serif;font-size:17px;text-align:center;outline:none;padding:0 2px;transition:border-color .15s;-moz-appearance:textfield;}
+.ex-target-input::-webkit-outer-spin-button,.ex-target-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.ex-target-input:focus{border-bottom-color:var(--yellow);}
+.ex-unit-lbl{font-size:10px;color:var(--muted);}
+.ex-actual-wrap{display:flex;align-items:center;gap:4px;margin-left:6px;}
+.ex-actual-input{width:46px;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;padding:3px 5px;text-align:center;outline:none;transition:border-color .15s;-moz-appearance:textfield;}
+.ex-actual-input::-webkit-outer-spin-button,.ex-actual-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.ex-actual-input:focus{border-color:var(--blue);}
+.ex-actual-input.above{border-color:rgba(93,186,116,.5);color:var(--green);}
+.ex-actual-input.below{border-color:rgba(232,25,44,.4);color:var(--red);}
+.ex-del-btn{width:18px;height:18px;border-radius:4px;background:transparent;border:none;color:var(--muted2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1;}
+.ex-del-btn:hover{color:var(--red);background:rgba(232,25,44,.1);}
+
+/* ADD EXERCISE PANEL */
+.add-ex-panel{margin:2px 14px 10px;background:rgba(255,255,255,.03);border:1px dashed var(--border2);border-radius:7px;padding:10px;}
+.add-ex-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.add-ex-input{background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:'Barlow',sans-serif;font-size:12px;padding:5px 8px;outline:none;transition:border-color .15s;}
+.add-ex-input:focus{border-color:var(--blue);}
+.add-ex-input.name-input{flex:2;min-width:90px;}
+.add-ex-input.amt-input{width:56px;text-align:center;-moz-appearance:textfield;}
+.add-ex-input.amt-input::-webkit-outer-spin-button,.add-ex-input.amt-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.add-ex-select{background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:'Barlow',sans-serif;font-size:12px;padding:5px 6px;outline:none;width:60px;}
+.add-ex-confirm{padding:5px 12px;border-radius:5px;background:var(--green);border:none;color:#000;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.add-ex-confirm:hover{opacity:.85;}
+.add-ex-cancel{padding:5px 10px;border-radius:5px;background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'Barlow',sans-serif;font-size:12px;cursor:pointer;}
+
+/* DAY NOTE */
+.day-note{margin:0 14px 8px;padding:6px 9px;background:rgba(255,255,255,.03);border-radius:5px;font-size:11px;color:var(--muted);line-height:1.5;font-style:italic;}
+
+/* ── STATS ── */
+.stats-page{padding:14px;max-width:600px;margin:0 auto;}
+.stats-hero{text-align:center;padding:24px 0 16px;}
+.stats-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;}
+.stats-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;inset:0;opacity:.06;pointer-events:none;}
+.kc-red::before{background:var(--red);}.kc-yellow::before{background:var(--yellow);}.kc-green::before{background:var(--green);}.kc-blue::before{background:var(--blue);}.kc-purple::before{background:var(--purple);}.kc-orange::before{background:var(--orange);}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.kpi-value{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;letter-spacing:1px;}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.kc-red .kpi-value{color:var(--red);}.kc-yellow .kpi-value{color:var(--yellow);}.kc-green .kpi-value{color:var(--green);}.kc-blue .kpi-value{color:var(--blue);}.kc-purple .kpi-value{color:var(--purple);}.kc-orange .kpi-value{color:var(--orange);}
+.s-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;padding-left:2px;}
+.phase-bar-wrap{margin-bottom:8px;}
+.pb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.pb-label{font-size:12px;font-weight:600;}
+.pb-pct{font-family:'Bebas Neue',sans-serif;font-size:15px;}
+.pb-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pb-fill{height:100%;border-radius:3px;transition:width .5s;}
+.perf-chart{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px;}
+.chart-title{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
+.bar-chart-scroll{overflow-x:auto;padding-bottom:4px;}
+.bar-chart{display:flex;align-items:flex-end;gap:2px;height:70px;min-width:max-content;}
+.bar-col{width:18px;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;}
+.bar-fill-wrap{flex:1;display:flex;align-items:flex-end;width:100%;}
+.bar-fill{width:100%;border-radius:2px 2px 0 0;min-height:2px;}
+.bar-lbl{font-size:7px;color:var(--muted2);white-space:nowrap;}
+.ex-totals{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.et-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);}
+.et-row:last-child{border-bottom:none;}
+.et-left{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;}
+.et-icon{font-size:15px;}
+.et-actual{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--green);}
+.et-target{font-size:10px;color:var(--muted);}
+.achievements{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;}
+.ach-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:11px;display:flex;gap:9px;align-items:flex-start;transition:border-color .2s;}
+.ach-card.unlocked{border-color:rgba(255,215,0,.3);}
+.ach-icon{font-size:22px;opacity:.25;}
+.ach-card.unlocked .ach-icon{opacity:1;}
+.ach-info .ach-name{font-size:11px;font-weight:700;color:var(--muted);}
+.ach-card.unlocked .ach-name{color:var(--yellow);}
+.ach-info .ach-desc{font-size:10px;color:var(--muted2);margin-top:2px;line-height:1.4;}
+
+/* SPORT SÉANCE WIDGET */
+.sport-session-row{display:flex;align-items:center;gap:8px;padding:6px 14px 4px;background:rgba(255,140,66,.05);border-top:1px solid rgba(255,140,66,.15);}
+.sport-session-icon{font-size:16px;}
+.sport-session-label{font-size:12px;font-weight:700;color:var(--orange);flex:1;}
+.sport-session-duration{width:52px;background:rgba(255,255,255,.06);border:1px solid rgba(255,140,66,.3);border-radius:4px;color:var(--orange);font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;padding:3px 5px;text-align:center;outline:none;-moz-appearance:textfield;}
+.sport-session-duration::-webkit-outer-spin-button,.sport-session-duration::-webkit-inner-spin-button{-webkit-appearance:none;}
+.sport-session-type{background:rgba(255,255,255,.06);border:1px solid rgba(255,140,66,.3);border-radius:4px;color:var(--orange);font-family:'Barlow',sans-serif;font-size:11px;padding:3px 5px;outline:none;}
+.sport-session-del{background:transparent;border:none;color:var(--muted2);font-size:14px;cursor:pointer;padding:2px 4px;border-radius:3px;transition:all .15s;}
+.sport-session-del:hover{color:var(--red);background:rgba(232,25,44,.1);}
+
+/* IO */
+.io-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
+.io-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.io-desc{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6;}
+.io-btns{display:flex;gap:7px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:.3px;}
+.btn-green{background:rgba(93,186,116,.15);color:var(--green);border:1px solid rgba(93,186,116,.3);}
+.btn-green:hover{background:rgba(93,186,116,.25);}
+.btn-blue{background:rgba(74,158,255,.12);color:var(--blue);border:1px solid rgba(74,158,255,.3);}
+.btn-blue:hover{background:rgba(74,158,255,.22);}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border2);}
+.btn-secondary:hover{border-color:var(--muted);}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;z-index:999;transition:transform .25s;pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* LEGEND */
+.legend-hint{font-size:10px;color:var(--muted2);padding:4px 14px 6px;display:flex;gap:12px;flex-wrap:wrap;}
+.lh-item{display:flex;align-items:center;gap:4px;}
+.lh-dot{width:8px;height:8px;border-radius:2px;}
+</style>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://apis.google.com/js/api.js" async></script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-tab active" onclick="showPage('training',this)">🥊 Programme</div>
+  <div class="nav-tab" onclick="showPage('stats',this)">📊 Stats</div>
+  <div class="nav-tab" onclick="showPage('export',this)">💾 Données</div>
+</nav>
+<div style="background:rgba(8,8,8,.98);border-bottom:1px solid #1a1a1a;padding:5px 14px;display:flex;align-items:center;justify-content:space-between;max-width:600px;margin:0 auto;">
+  <span id="sync-status" style="font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.5px;font-family:'Barlow',sans-serif;">☁️ Google Drive</span>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <button id="btn-gdrive-connect" onclick="connectGoogleDrive()" class="btn btn-blue" style="font-size:10px;padding:4px 10px;display:inline-flex;">
+      🔌 Connecter Drive
+    </button>
+    <button id="btn-gdrive-disconnect" onclick="disconnectGoogleDrive()" class="btn btn-secondary" style="font-size:10px;padding:4px 10px;display:none;">
+      Déconnecter
+    </button>
+  </div>
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ TRAINING ═══ -->
+<div class="page active" id="page-training">
+  <div class="hero">
+    <div class="hero-tag">Programme · 22 juin 2026 → 1er jan 2027</div>
+    <div class="hero-title">ONE<br><span class="r">PUNCH</span><br>MAN</div>
+    <div class="hero-meta" id="hero-meta">Chargement…</div>
+    <div class="hero-bar"></div>
+  </div>
+  <div class="pgbar-wrap"><div class="pgbar-fill" id="pgbar" style="width:0%"></div></div>
+  <div id="training-content"></div>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div class="page" id="page-stats">
+  <div class="stats-page">
+    <div class="stats-hero">
+      <div class="stats-title">TABLEAU DE BORD</div>
+      <div class="stats-sub">Progression en temps réel</div>
+    </div>
+    <div id="stats-content"></div>
+  </div>
+</div>
+
+<!-- ═══ EXPORT ═══ -->
+<div class="page" id="page-export">
+  <div class="stats-page">
+    <div class="stats-hero">
+      <div class="stats-title">DONNÉES</div>
+      <div class="stats-sub">Sauvegarde & restauration</div>
+    </div>
+    
+    <div class="io-section" style="border-color:rgba(74,158,255,.3);">
+      <div class="io-title">☁️ Google Drive — Sauvegarde automatique</div>
+      <div class="io-desc">Tes données sont sauvegardées automatiquement dans un fichier caché sur ton Google Drive personnel (<code style="background:#222;padding:2px 5px;border-radius:3px;font-size:11px">modeste-training.json</code>). Seule ton app peut y accéder.</div>
+      <div style="margin-bottom:10px;">
+        <span id="sync-status-2" style="font-size:12px;font-weight:600;color:var(--muted);">☁️ Statut Drive</span>
+      </div>
+      <div class="io-btns">
+        <button class="btn btn-blue" onclick="connectGoogleDrive()">🔌 Connecter Google Drive</button>
+        <button class="btn btn-secondary" onclick="saveToDrive()">☁️ Sauvegarder maintenant</button>
+        <button class="btn btn-secondary" onclick="loadFromDrive()">⬇️ Recharger depuis Drive</button>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:rgba(74,158,255,.06);border-radius:6px;font-size:11px;color:var(--muted);line-height:1.6;">
+        💡 <strong style="color:var(--text)">Comment ça marche :</strong> chaque modification est sauvegardée automatiquement sur Drive après 2 secondes. Au prochain lancement de l'app, tes données sont rechargées depuis Drive — même si tu changes de téléphone.
+      </div>
+    </div>
+
+    <div class="io-section">
+      <div class="io-title">💾 Exporter mes données</div>
+      <div class="io-desc">Télécharge un fichier JSON de toutes tes réalisations et personnalisations. À garder précieusement !</div>
+      <div class="io-btns"><button class="btn btn-green" onclick="exportData()">⬇️ Télécharger JSON</button></div>
+    </div>
+    <div class="io-section">
+      <div class="io-title">📂 Importer des données</div>
+      <div class="io-desc">Restaure un fichier JSON exporté. Remplace toutes les données actuelles.</div>
+      <div class="io-btns">
+        <button class="btn btn-blue" onclick="document.getElementById('import-file').click()">⬆️ Charger fichier JSON</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+    </div>
+    <div class="io-section">
+      <div class="io-title">🗑️ Réinitialiser</div>
+      <div class="io-desc">Efface toutes les données de progression et personnalisations. Irréversible.</div>
+      <div class="io-btns"><button class="btn btn-secondary" onclick="resetData()">Réinitialiser tout</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  PROGRAM DATA
+// ═══════════════════════════════════════════════
+const PROGRAM_BASE = [{"w":1,"lbl":"Semaine 1","dates":"22 Jun → 28 Jun 2026","ph":1,"phName":"Adaptation","days":[{"name":"Lundi","date":"22/06","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Mardi","date":"23/06","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"24/06","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":24,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":24,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":24,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"25/06","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"26/06","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Samedi","date":"27/06","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course longue","i":"🏃","a":5,"u":"km"}]},{"name":"Dimanche","date":"28/06","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":2,"lbl":"Semaine 2","dates":"29 Jun → 05 Jul 2026","ph":1,"phName":"Adaptation","days":[{"name":"Lundi","date":"29/06","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Mardi","date":"30/06","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"01/07","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":24,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":24,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":24,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"02/07","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"03/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Samedi","date":"04/07","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course longue","i":"🏃","a":5,"u":"km"}]},{"name":"Dimanche","date":"05/07","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":3,"lbl":"Semaine 3","dates":"06 Jul → 12 Jul 2026","ph":1,"phName":"Adaptation","days":[{"name":"Lundi","date":"06/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Mardi","date":"07/07","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"08/07","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":24,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":24,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":24,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"09/07","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"10/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Samedi","date":"11/07","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course longue","i":"🏃","a":5,"u":"km"}]},{"name":"Dimanche","date":"12/07","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":4,"lbl":"Semaine 4","dates":"13 Jul → 19 Jul 2026","ph":1,"phName":"Adaptation","days":[{"name":"Lundi","date":"13/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Mardi","date":"14/07","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"15/07","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":24,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":24,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":24,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"16/07","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"17/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":40,"u":"reps"},{"n":"Squats","i":"🦵","a":40,"u":"reps"},{"n":"Abdos","i":"🔥","a":40,"u":"reps"},{"n":"Course","i":"🏃","a":3,"u":"km"}]},{"name":"Samedi","date":"18/07","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course longue","i":"🏃","a":5,"u":"km"}]},{"name":"Dimanche","date":"19/07","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":5,"lbl":"Semaine 5","dates":"20 Jul → 26 Jul 2026","ph":2,"phName":"Construction","days":[{"name":"Lundi","date":"20/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"21/07","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"22/07","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":30,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":30,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":30,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"23/07","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"24/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"25/07","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course longue","i":"🏃","a":6,"u":"km"}]},{"name":"Dimanche","date":"26/07","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":6,"lbl":"Semaine 6","dates":"27 Jul → 02 Aug 2026","ph":2,"phName":"Construction","days":[{"name":"Lundi","date":"27/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"28/07","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"29/07","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":30,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":30,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":30,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"30/07","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"31/07","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"01/08","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course longue","i":"🏃","a":6,"u":"km"}]},{"name":"Dimanche","date":"02/08","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":7,"lbl":"Semaine 7","dates":"03 Aug → 09 Aug 2026","ph":2,"phName":"Construction","days":[{"name":"Lundi","date":"03/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"04/08","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"05/08","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":30,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":30,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":30,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"06/08","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"07/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"08/08","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course longue","i":"🏃","a":6,"u":"km"}]},{"name":"Dimanche","date":"09/08","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":8,"lbl":"Semaine 8","dates":"10 Aug → 16 Aug 2026","ph":2,"phName":"Construction","days":[{"name":"Lundi","date":"10/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"11/08","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"12/08","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":30,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":30,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":30,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"13/08","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"14/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":50,"u":"reps"},{"n":"Squats","i":"🦵","a":50,"u":"reps"},{"n":"Abdos","i":"🔥","a":50,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"15/08","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course longue","i":"🏃","a":6,"u":"km"}]},{"name":"Dimanche","date":"16/08","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":9,"lbl":"Semaine 9","dates":"17 Aug → 23 Aug 2026","ph":3,"phName":"Consolidation","days":[{"name":"Lundi","date":"17/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"18/08","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"19/08","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":36,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":36,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":36,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"20/08","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"21/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"22/08","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course longue","i":"🏃","a":7,"u":"km"}]},{"name":"Dimanche","date":"23/08","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":10,"lbl":"Semaine 10","dates":"24 Aug → 30 Aug 2026","ph":3,"phName":"Consolidation","days":[{"name":"Lundi","date":"24/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"25/08","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"26/08","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":36,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":36,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":36,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"27/08","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"28/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"29/08","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course longue","i":"🏃","a":7,"u":"km"}]},{"name":"Dimanche","date":"30/08","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":11,"lbl":"Semaine 11","dates":"31 Aug → 06 Sep 2026","ph":3,"phName":"Consolidation","days":[{"name":"Lundi","date":"31/08","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"01/09","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"02/09","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":36,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":36,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":36,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"03/09","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"04/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"05/09","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course longue","i":"🏃","a":7,"u":"km"}]},{"name":"Dimanche","date":"06/09","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":12,"lbl":"Semaine 12","dates":"07 Sep → 13 Sep 2026","ph":3,"phName":"Consolidation","days":[{"name":"Lundi","date":"07/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"08/09","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"09/09","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":36,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":36,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":36,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"10/09","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"11/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"12/09","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course longue","i":"🏃","a":7,"u":"km"}]},{"name":"Dimanche","date":"13/09","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":13,"lbl":"Semaine 13","dates":"14 Sep → 20 Sep 2026","ph":3,"phName":"Consolidation","days":[{"name":"Lundi","date":"14/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"15/09","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"16/09","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":36,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":36,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":36,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"17/09","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"18/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"19/09","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course longue","i":"🏃","a":7,"u":"km"}]},{"name":"Dimanche","date":"20/09","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":14,"lbl":"Semaine 14","dates":"21 Sep → 27 Sep 2026","ph":3,"phName":"Consolidation","days":[{"name":"Lundi","date":"21/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Mardi","date":"22/09","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"23/09","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":36,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":36,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":36,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"24/09","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"25/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":60,"u":"reps"},{"n":"Squats","i":"🦵","a":60,"u":"reps"},{"n":"Abdos","i":"🔥","a":60,"u":"reps"},{"n":"Course","i":"🏃","a":4,"u":"km"}]},{"name":"Samedi","date":"26/09","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course longue","i":"🏃","a":7,"u":"km"}]},{"name":"Dimanche","date":"27/09","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":15,"lbl":"Semaine 15","dates":"28 Sep → 04 Oct 2026","ph":4,"phName":"Progression","days":[{"name":"Lundi","date":"28/09","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"29/09","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"30/09","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":42,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":42,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":42,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"01/10","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"02/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"03/10","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course longue","i":"🏃","a":8,"u":"km"}]},{"name":"Dimanche","date":"04/10","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":16,"lbl":"Semaine 16","dates":"05 Oct → 11 Oct 2026","ph":4,"phName":"Progression","days":[{"name":"Lundi","date":"05/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"06/10","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"07/10","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":42,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":42,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":42,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"08/10","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"09/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"10/10","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course longue","i":"🏃","a":8,"u":"km"}]},{"name":"Dimanche","date":"11/10","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":17,"lbl":"Semaine 17","dates":"12 Oct → 18 Oct 2026","ph":4,"phName":"Progression","days":[{"name":"Lundi","date":"12/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"13/10","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"14/10","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":42,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":42,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":42,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"15/10","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"16/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"17/10","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course longue","i":"🏃","a":8,"u":"km"}]},{"name":"Dimanche","date":"18/10","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":18,"lbl":"Semaine 18","dates":"19 Oct → 25 Oct 2026","ph":4,"phName":"Progression","days":[{"name":"Lundi","date":"19/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"20/10","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"21/10","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":42,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":42,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":42,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"22/10","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"23/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"24/10","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course longue","i":"🏃","a":8,"u":"km"}]},{"name":"Dimanche","date":"25/10","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":19,"lbl":"Semaine 19","dates":"26 Oct → 01 Nov 2026","ph":4,"phName":"Progression","days":[{"name":"Lundi","date":"26/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"27/10","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"28/10","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":42,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":42,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":42,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"29/10","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"30/10","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"31/10","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course longue","i":"🏃","a":8,"u":"km"}]},{"name":"Dimanche","date":"01/11","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":20,"lbl":"Semaine 20","dates":"02 Nov → 08 Nov 2026","ph":4,"phName":"Progression","days":[{"name":"Lundi","date":"02/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"03/11","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"04/11","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":42,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":42,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":42,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"05/11","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"06/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":70,"u":"reps"},{"n":"Squats","i":"🦵","a":70,"u":"reps"},{"n":"Abdos","i":"🔥","a":70,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"07/11","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course longue","i":"🏃","a":8,"u":"km"}]},{"name":"Dimanche","date":"08/11","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":21,"lbl":"Semaine 21","dates":"09 Nov → 15 Nov 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"09/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"10/11","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"11/11","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"12/11","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"13/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"14/11","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"15/11","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":22,"lbl":"Semaine 22","dates":"16 Nov → 22 Nov 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"16/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"17/11","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"18/11","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"19/11","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"20/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"21/11","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"22/11","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":23,"lbl":"Semaine 23","dates":"23 Nov → 29 Nov 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"23/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"24/11","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"25/11","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"26/11","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"27/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"28/11","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"29/11","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":24,"lbl":"Semaine 24","dates":"30 Nov → 06 Dec 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"30/11","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"01/12","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"02/12","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"03/12","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"04/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"05/12","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"06/12","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":25,"lbl":"Semaine 25","dates":"07 Dec → 13 Dec 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"07/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"08/12","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"09/12","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"10/12","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"11/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"12/12","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"13/12","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":26,"lbl":"Semaine 26","dates":"14 Dec → 20 Dec 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"14/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"15/12","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"16/12","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"17/12","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"18/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"19/12","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"20/12","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":27,"lbl":"Semaine 27","dates":"21 Dec → 27 Dec 2026","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"21/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"22/12","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"23/12","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"24/12","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"25/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Samedi","date":"26/12","type":"hard","label":"Intensif","color":"red","note":null,"exs":[{"n":"Pompes","i":"💪","a":90,"u":"reps"},{"n":"Squats","i":"🦵","a":90,"u":"reps"},{"n":"Abdos","i":"🔥","a":90,"u":"reps"},{"n":"Course longue","i":"🏃","a":10,"u":"km"}]},{"name":"Dimanche","date":"27/12","type":"rest","label":"Repos actif","color":"green","note":"Jour de récup — c'est maintenant que les muscles se construisent.","exs":[{"n":"Marche ou vélo","i":"🚶","a":45,"u":"min"}]}]},{"w":28,"lbl":"Semaine 28","dates":"28 Dec → 01 Jan 2027","ph":5,"phName":"Peak","days":[{"name":"Lundi","date":"28/12","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]},{"name":"Mardi","date":"29/12","type":"recovery","label":"Récup active","color":"green","note":"Pas de course — protect tes articulations. La marche maintient l'activité.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Marche","i":"🚶","a":30,"u":"min"}]},{"name":"Mercredi","date":"30/12","type":"sport","label":"⚽🏀 Sport","color":"blue","note":"Le sport remplace la course. Réduis les reps si tu te sens fatigué — l'essentiel c'est le match.","exs":[{"n":"Pompes (avant le sport)","i":"💪","a":48,"u":"reps"},{"n":"Squats (avant le sport)","i":"🦵","a":48,"u":"reps"},{"n":"Abdos (avant le sport)","i":"🔥","a":48,"u":"reps"},{"n":"Foot / Basket","i":"⚽","a":60,"u":"min"}]},{"name":"Jeudi","date":"31/12","type":"recovery","label":"Récup active","color":"green","note":"Récup après le sport de la veille. Intensité douce.","exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Vélo / Marche","i":"🚴","a":30,"u":"min"}]},{"name":"Vendredi","date":"01/01","type":"moderate","label":"Modéré","color":"yellow","note":null,"exs":[{"n":"Pompes","i":"💪","a":80,"u":"reps"},{"n":"Squats","i":"🦵","a":80,"u":"reps"},{"n":"Abdos","i":"🔥","a":80,"u":"reps"},{"n":"Course","i":"🏃","a":5,"u":"km"}]}]}];
+
+const PHASE_INFO = {
+  1:{cls:'ph1',col:'#FFD700',name:'Adaptation',desc:'40 reps · 3-5 km'},
+  2:{cls:'ph2',col:'#5dba74',name:'Construction',desc:'50-60 reps · 4-6 km'},
+  3:{cls:'ph3',col:'#E8192C',name:'Consolidation',desc:'60-70 reps · 4-7 km'},
+  4:{cls:'ph4',col:'#ff8c42',name:'Progression',desc:'70-80 reps · 5-8 km'},
+  5:{cls:'ph5',col:'#cc44ff',name:'Peak',desc:'80-90 reps · 5-10 km'},
+};
+
+// ═══════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════
+// DB structure:
+// {
+//   checks: { "w{W}-d{D}-e{E}": bool },
+//   actuals: { "w{W}-d{D}-e{E}": number },
+//   targets: { "w{W}-d{D}-e{E}": number },   // overridden targets
+//   customExs: { "w{W}-d{D}": [{n,i,a,u}] }, // added exercises
+//   sportSessions: { "w{W}-d{D}": [{type,duration}] } // sport sessions
+// }
+const SK = 'opm_v3';
+let DB = {checks:{}, actuals:{}, targets:{}, customExs:{}, sportSessions:{}};
+
+function loadDB(){
+  try{ const r=localStorage.getItem(SK); if(r) DB=Object.assign({checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}},JSON.parse(r)); }
+  catch(e){}
+}
+function saveDB(){
+  try{localStorage.setItem(SK,JSON.stringify(DB));}catch(e){}
+  scheduleDriveSync();
+}
+
+function ek(w,d,e){ return `w${w}-d${d}-e${e}`; }
+function dk(w,d){ return `w${w}-d${d}`; }
+
+// ═══════════════════════════════════════════════
+//  PROGRAM — merge base + custom
+// ═══════════════════════════════════════════════
+function getProgram(){
+  // Deep clone
+  return PROGRAM_BASE.map(week => ({
+    ...week,
+    days: week.days.map((day, dIdx) => {
+      const key = dk(week.w, dIdx);
+      const customs = DB.customExs[key] || [];
+      // merge custom exercises (tagged with custom:true)
+      const allExs = [...day.exs, ...customs.map(c => ({...c, custom:true}))];
+      return { ...day, exs: allExs };
+    })
+  }));
+}
+
+// ═══════════════════════════════════════════════
+//  PAGE SWITCHING
+// ═══════════════════════════════════════════════
+function showPage(id, tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(tab) tab.classList.add('active');
+  if(id==='stats') renderStats();
+}
+
+// ═══════════════════════════════════════════════
+//  COLOR HELPERS
+// ═══════════════════════════════════════════════
+function badgeCls(c){ return {red:'b-red',yellow:'b-yellow',green:'b-green',blue:'b-blue',orange:'b-orange'}[c]||'b-green'; }
+function stripeCls(c){ return {red:'s-red',yellow:'s-yellow',green:'s-green',blue:'s-blue',orange:'s-orange'}[c]||'s-green'; }
+
+// ═══════════════════════════════════════════════
+//  RENDER TRAINING
+// ═══════════════════════════════════════════════
+function renderTraining(){
+  const prog = getProgram();
+  const container = document.getElementById('training-content');
+  let html = '';
+  let lastPhase = 0;
+
+  prog.forEach(week => {
+    const ph = PHASE_INFO[week.ph];
+    if(week.ph !== lastPhase){
+      lastPhase = week.ph;
+      html += `<div class="phase-band ${ph.cls}" style="margin-top:${week.ph===1?'4px':'14px'}">
+        <div class="ph-num">${week.ph}</div>
+        <div class="ph-info">
+          <div class="ph-label">Phase ${week.ph}</div>
+          <div class="ph-title">${ph.name}</div>
+          <div class="ph-desc">${ph.desc}</div>
+        </div>
+      </div>`;
+    }
+
+    const {pct} = weekProgress(week);
+    const circum = 2*Math.PI*13;
+    const offset = circum*(1-pct/100);
+    const ringCol = pct>=100?'#5dba74':pct>50?'#FFD700':'#E8192C';
+
+    html += `<div class="week-wrap"><div class="week-card" id="wk${week.w}">
+      <div class="week-hdr" onclick="toggleWeek(${week.w})">
+        <div class="wh-left">
+          <div class="w-num">${String(week.w).padStart(2,'0')}</div>
+          <div class="w-info">
+            <div class="w-label">${week.lbl}</div>
+            <div class="w-dates">${week.dates}</div>
+          </div>
+        </div>
+        <div class="wh-right">
+          <div class="w-progress-ring">
+            <svg width="34" height="34" viewBox="0 0 34 34">
+              <circle class="ring-bg" cx="17" cy="17" r="13"/>
+              <circle class="ring-fill" cx="17" cy="17" r="13"
+                stroke="${ringCol}" stroke-dasharray="${circum.toFixed(1)}"
+                stroke-dashoffset="${offset.toFixed(1)}"/>
+            </svg>
+            <div class="w-progress-pct">${Math.round(pct)}%</div>
+          </div>
+          <span class="w-chevron">▼</span>
+        </div>
+      </div>
+      <div class="week-body" id="wkb${week.w}">`;
+
+    week.days.forEach((day, dIdx) => {
+      html += renderDay(week.w, dIdx, day, week);
+    });
+
+    html += '</div></div></div>';
+  });
+
+  container.innerHTML = html;
+  updateHeroMeta();
+  updateGlobalProgress();
+}
+
+function renderDay(wNum, dIdx, day, week){
+  const key = dk(wNum, dIdx);
+  const sessions = DB.sportSessions[key] || [];
+  const allDone = isDayComplete(wNum, dIdx, day);
+  const hasSport = sessions.length > 0;
+  const dayColor = hasSport ? 'orange' : day.color;
+
+  let html = `<div class="day-row" id="dayrow-${wNum}-${dIdx}">
+    <div class="day-stripe-bar ${stripeCls(dayColor)}"></div>
+    <div class="day-hdr">
+      <div class="day-hdr-left">
+        <span class="day-name">${day.name}</span>
+        <span class="day-date">${day.date}</span>
+        <span class="day-badge ${badgeCls(day.color)}">${day.label}</span>
+        ${hasSport ? `<span class="sport-badge" title="${sessions.length} séance(s) sport">⚽ ×${sessions.length}</span>` : ''}
+      </div>
+      <div class="day-hdr-right">
+        <span class="day-done-badge${allDone?' visible':''}" id="donebadge-${wNum}-${dIdx}">✓ Fait</span>
+      </div>
+    </div>`;
+
+  // Sport sessions
+  sessions.forEach((s, sIdx) => {
+    html += `<div class="sport-session-row">
+      <span class="sport-session-icon">${s.type==='basket'?'🏀':'⚽'}</span>
+      <span class="sport-session-label">${s.type==='basket'?'Basket':'Foot'}</span>
+      <select class="sport-session-type" onchange="updateSportType(${wNum},${dIdx},${sIdx},this.value)">
+        <option value="foot"${s.type==='foot'?' selected':''}>⚽ Foot</option>
+        <option value="basket"${s.type==='basket'?' selected':''}>🏀 Basket</option>
+      </select>
+      <input class="sport-session-duration" type="number" min="0" placeholder="min"
+        value="${s.duration||''}" title="Durée en minutes"
+        onchange="updateSportDuration(${wNum},${dIdx},${sIdx},this.value)">
+      <span style="font-size:10px;color:var(--muted)">min</span>
+      <button class="sport-session-del" onclick="removeSportSession(${wNum},${dIdx},${sIdx})" title="Supprimer">×</button>
+    </div>`;
+  });
+
+  // Day actions
+  html += `<div class="day-actions">
+    <button class="act-btn sport-add" onclick="addSportSession(${wNum},${dIdx})">+ ⚽ Ajouter sport</button>
+    <button class="act-btn" onclick="toggleAddExPanel(${wNum},${dIdx})">+ Ajouter exercice</button>
+  </div>`;
+
+  // Add exercise panel (hidden by default)
+  html += `<div class="add-ex-panel" id="addpanel-${wNum}-${dIdx}" style="display:none">
+    <div class="add-ex-row">
+      <input class="add-ex-input name-input" type="text" placeholder="Nom (ex: Tractions)" id="aen-${wNum}-${dIdx}">
+      <input class="add-ex-input amt-input" type="number" min="0" placeholder="Qté" id="aea-${wNum}-${dIdx}">
+      <select class="add-ex-select" id="aeu-${wNum}-${dIdx}">
+        <option value="reps">reps</option>
+        <option value="km">km</option>
+        <option value="min">min</option>
+        <option value="sec">sec</option>
+      </select>
+      <button class="add-ex-confirm" onclick="confirmAddEx(${wNum},${dIdx})">Ajouter</button>
+      <button class="add-ex-cancel" onclick="toggleAddExPanel(${wNum},${dIdx})">Annuler</button>
+    </div>
+  </div>`;
+
+  // Legend hint (once)
+  html += `<div class="legend-hint"><span class="lh-item"><span class="lh-dot" style="background:var(--yellow)"></span>Objectif</span><span class="lh-item"><span style="font-size:10px">→</span>Réel</span><span class="lh-item"><span style="color:var(--green);font-size:10px">✓</span>Coché</span><span style="color:var(--muted2);font-size:10px">Crayon = modifier objectif</span></div>`;
+
+  // Exercises
+  html += `<div class="ex-list" id="exlist-${wNum}-${dIdx}">`;
+  day.exs.forEach((ex, eIdx) => {
+    html += renderExItem(wNum, dIdx, eIdx, ex, day.exs.length);
+  });
+  html += `</div>`;
+
+  if(day.note) html += `<div class="day-note">${day.note}</div>`;
+  html += `</div>`;
+  return html;
+}
+
+function renderExItem(wNum, dIdx, eIdx, ex, totalExs){
+  const key = ek(wNum, dIdx, eIdx);
+  const chk = DB.checks[key] || false;
+  const act = DB.actuals[key] ?? null;
+  const tgt = DB.targets[key] ?? ex.a;
+  const actVal = act !== null ? act : '';
+  let inputCls = '';
+  if(act !== null && act !== ''){
+    inputCls = act >= tgt ? ' above' : ' below';
+  }
+  const isCustom = ex.custom === true;
+  // Calculate real ex index considering base + custom split
+  return `<div class="ex-item" id="ex-${wNum}-${dIdx}-${eIdx}">
+    <div class="ex-check${chk?' checked':''}" onclick="toggleCheck(${wNum},${dIdx},${eIdx})"></div>
+    <span class="ex-icon">${ex.i||'🏋️'}</span>
+    <div class="ex-name-wrap"><span class="ex-name">${ex.n}</span></div>
+    <div class="ex-target-wrap">
+      <input class="ex-target-input" type="number" min="0"
+        value="${tgt}" title="Modifier l'objectif"
+        onchange="updateTarget(${wNum},${dIdx},${eIdx},this)"
+        oninput="this.style.width=Math.max(32,this.value.length*11+8)+'px'">
+      <span class="ex-unit-lbl">${ex.u}</span>
+    </div>
+    <div class="ex-actual-wrap">
+      <span style="font-size:10px;color:var(--muted2)">→</span>
+      <input class="ex-actual-input${inputCls}" type="number" min="0" placeholder="réel"
+        value="${actVal}" title="Ta réalisation réelle"
+        onchange="setActual(${wNum},${dIdx},${eIdx},this)"
+        oninput="colorInput(this, DB.targets['${key}'] ?? ${ex.a})">
+      <span class="ex-unit-lbl">${ex.u}</span>
+    </div>
+    <button class="ex-del-btn" onclick="deleteEx(${wNum},${dIdx},${eIdx},${isCustom})" title="${isCustom?'Supprimer':'Masquer'}">×</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  EXERCISE INTERACTIONS
+// ═══════════════════════════════════════════════
+function toggleCheck(wNum, dIdx, eIdx){
+  const key = ek(wNum,dIdx,eIdx);
+  const newVal = !DB.checks[key];
+  DB.checks[key] = newVal;
+  // auto-fill actual if checking without value
+  const prog = getProgram();
+  const week = prog.find(w=>w.w===wNum);
+  const ex = week?.days[dIdx]?.exs[eIdx];
+  if(newVal && (DB.actuals[key]==null || DB.actuals[key]==='') && ex){
+    const tgt = DB.targets[key] ?? ex.a;
+    DB.actuals[key] = tgt;
+    const inp = document.querySelector(`#ex-${wNum}-${dIdx}-${eIdx} .ex-actual-input`);
+    if(inp){ inp.value = tgt; colorInput(inp, tgt); }
+  }
+  saveDB();
+  const el = document.querySelector(`#ex-${wNum}-${dIdx}-${eIdx} .ex-check`);
+  if(el) el.classList.toggle('checked', newVal);
+  afterExChange(wNum, dIdx);
+}
+
+function updateTarget(wNum, dIdx, eIdx, input){
+  const key = ek(wNum,dIdx,eIdx);
+  const val = parseFloat(input.value);
+  if(!isNaN(val) && val >= 0){
+    DB.targets[key] = val;
+    saveDB();
+    // recolor actual
+    const prog = getProgram();
+    const week = prog.find(w=>w.w===wNum);
+    const actInp = document.querySelector(`#ex-${wNum}-${dIdx}-${eIdx} .ex-actual-input`);
+    if(actInp) colorInput(actInp, val);
+    toast('🎯 Objectif mis à jour');
+  }
+}
+
+function setActual(wNum, dIdx, eIdx, input){
+  const key = ek(wNum,dIdx,eIdx);
+  const val = input.value==='' ? null : parseFloat(input.value);
+  DB.actuals[key] = val;
+  if(val !== null && val > 0 && !DB.checks[key]){
+    DB.checks[key] = true;
+    const checkEl = document.querySelector(`#ex-${wNum}-${dIdx}-${eIdx} .ex-check`);
+    if(checkEl) checkEl.classList.add('checked');
+  }
+  saveDB();
+  afterExChange(wNum, dIdx);
+}
+
+function colorInput(input, tgt){
+  const val = parseFloat(input.value);
+  input.classList.remove('above','below');
+  if(!isNaN(val) && input.value!==''){
+    input.classList.add(val>=tgt?'above':'below');
+  }
+}
+
+function deleteEx(wNum, dIdx, eIdx, isCustom){
+  if(isCustom){
+    // Remove from customExs
+    const key = dk(wNum,dIdx);
+    const prog = getProgram();
+    const week = prog.find(w=>w.w===wNum);
+    const baseLen = PROGRAM_BASE.find(w=>w.w===wNum)?.days[dIdx]?.exs.length || 0;
+    const customIdx = eIdx - baseLen;
+    if(DB.customExs[key] && customIdx >= 0){
+      DB.customExs[key].splice(customIdx,1);
+      saveDB();
+      redrawDay(wNum, dIdx);
+      toast('Exercice supprimé');
+    }
+  } else {
+    // For base exercises, just remove from the DOM visually and mark hidden
+    const key = ek(wNum,dIdx,eIdx);
+    DB.checks[key] = false;
+    DB.actuals[key] = null;
+    saveDB();
+    const el = document.getElementById(`ex-${wNum}-${dIdx}-${eIdx}`);
+    if(el) el.style.display='none';
+    toast('Exercice masqué');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  ADD EXERCISE
+// ═══════════════════════════════════════════════
+function toggleAddExPanel(wNum, dIdx){
+  const panel = document.getElementById(`addpanel-${wNum}-${dIdx}`);
+  if(panel) panel.style.display = panel.style.display==='none' ? 'block' : 'none';
+}
+
+function confirmAddEx(wNum, dIdx){
+  const name = document.getElementById(`aen-${wNum}-${dIdx}`)?.value?.trim();
+  const amt = parseFloat(document.getElementById(`aea-${wNum}-${dIdx}`)?.value);
+  const unit = document.getElementById(`aeu-${wNum}-${dIdx}`)?.value || 'reps';
+  if(!name || isNaN(amt) || amt<0){ toast('❌ Remplis le nom et la quantité'); return; }
+  const key = dk(wNum,dIdx);
+  if(!DB.customExs[key]) DB.customExs[key]=[];
+  DB.customExs[key].push({n:name, i:'🏋️', a:amt, u:unit});
+  saveDB();
+  redrawDay(wNum,dIdx);
+  toast('✅ Exercice ajouté');
+}
+
+// ═══════════════════════════════════════════════
+//  SPORT SESSIONS
+// ═══════════════════════════════════════════════
+function addSportSession(wNum, dIdx){
+  const key = dk(wNum,dIdx);
+  if(!DB.sportSessions[key]) DB.sportSessions[key]=[];
+  DB.sportSessions[key].push({type:'foot', duration:60});
+  saveDB();
+  redrawDay(wNum,dIdx);
+  toast('⚽ Séance sport ajoutée !');
+}
+
+function removeSportSession(wNum, dIdx, sIdx){
+  const key = dk(wNum,dIdx);
+  if(DB.sportSessions[key]) DB.sportSessions[key].splice(sIdx,1);
+  saveDB();
+  redrawDay(wNum,dIdx);
+}
+
+function updateSportType(wNum, dIdx, sIdx, val){
+  const key = dk(wNum,dIdx);
+  if(DB.sportSessions[key]?.[sIdx]) DB.sportSessions[key][sIdx].type = val;
+  saveDB();
+  redrawDay(wNum,dIdx);
+}
+
+function updateSportDuration(wNum, dIdx, sIdx, val){
+  const key = dk(wNum,dIdx);
+  if(DB.sportSessions[key]?.[sIdx]) DB.sportSessions[key][sIdx].duration = parseFloat(val)||0;
+  saveDB();
+}
+
+// ═══════════════════════════════════════════════
+//  REDRAW SINGLE DAY (without full re-render)
+// ═══════════════════════════════════════════════
+function redrawDay(wNum, dIdx){
+  const prog = getProgram();
+  const week = prog.find(w=>w.w===wNum);
+  if(!week) return;
+  const day = week.days[dIdx];
+  const rowEl = document.getElementById(`dayrow-${wNum}-${dIdx}`);
+  if(rowEl){
+    rowEl.outerHTML = renderDay(wNum, dIdx, day, week);
+  }
+  afterExChange(wNum, dIdx);
+}
+
+// ═══════════════════════════════════════════════
+//  PROGRESS UPDATES
+// ═══════════════════════════════════════════════
+function isDayComplete(wNum, dIdx, day){
+  return day.exs.every((_,eIdx) => DB.checks[ek(wNum,dIdx,eIdx)]);
+}
+
+function weekProgress(week){
+  let done=0, total=0;
+  week.days.forEach((day,dIdx) => {
+    day.exs.forEach((_,eIdx) => {
+      total++;
+      if(DB.checks[ek(week.w,dIdx,eIdx)]) done++;
+    });
+  });
+  return {pct: total===0?0:(done/total)*100, done, total};
+}
+
+function afterExChange(wNum, dIdx){
+  // update day badge
+  const prog = getProgram();
+  const week = prog.find(w=>w.w===wNum);
+  if(!week) return;
+  const day = week.days[dIdx];
+  const done = isDayComplete(wNum, dIdx, day);
+  const badge = document.getElementById(`donebadge-${wNum}-${dIdx}`);
+  if(badge) badge.classList.toggle('visible', done);
+  // update week ring
+  const {pct} = weekProgress(week);
+  const card = document.getElementById('wk'+wNum);
+  if(card){
+    const ringFill = card.querySelector('.ring-fill');
+    const pctEl = card.querySelector('.w-progress-pct');
+    const circum = 2*Math.PI*13;
+    const offset = circum*(1-pct/100);
+    const col = pct>=100?'#5dba74':pct>50?'#FFD700':'#E8192C';
+    if(ringFill){ ringFill.setAttribute('stroke-dashoffset',offset.toFixed(1)); ringFill.setAttribute('stroke',col); }
+    if(pctEl) pctEl.textContent = Math.round(pct)+'%';
+  }
+  updateGlobalProgress();
+}
+
+function updateGlobalProgress(){
+  let done=0,total=0;
+  getProgram().forEach(week=>{
+    const p=weekProgress(week); done+=p.done; total+=p.total;
+  });
+  const pct=total===0?0:(done/total)*100;
+  const bar=document.getElementById('pgbar');
+  if(bar) bar.style.width=pct.toFixed(1)+'%';
+  updateHeroMeta();
+}
+
+function updateHeroMeta(){
+  let doneEx=0,totalEx=0,doneDays=0,totalDays=0,sportCount=0;
+  const prog=getProgram();
+  prog.forEach(week=>{
+    week.days.forEach((day,dIdx)=>{
+      totalDays++;
+      if(isDayComplete(week.w,dIdx,day)) doneDays++;
+      day.exs.forEach((_,eIdx)=>{ totalEx++; if(DB.checks[ek(week.w,dIdx,eIdx)]) doneEx++; });
+      const sessions = DB.sportSessions[dk(week.w,dIdx)]||[];
+      sportCount += sessions.length;
+    });
+  });
+  const el=document.getElementById('hero-meta');
+  if(el) el.textContent=`${doneDays}/${totalDays} jours · ${doneEx}/${totalEx} exercices · ⚽ ${sportCount} séance(s) sport`;
+}
+
+function toggleWeek(wNum){
+  document.getElementById('wk'+wNum)?.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════
+function computeStats(){
+  let totalDays=0,doneDays=0,totalEx=0,doneEx=0;
+  let pompes={t:0,a:0},squats={t:0,a:0},abdos={t:0,a:0},course={t:0,a:0};
+  let sportTotal=0,sportDuration=0;
+  let phaseStats={1:{d:0,t:0},2:{d:0,t:0},3:{d:0,t:0},4:{d:0,t:0},5:{d:0,t:0}};
+  let weekPcts=[];
+  let streakBest=0,streakTmp=0;
+
+  const prog=getProgram();
+  prog.forEach(week=>{
+    let wd=0,wt=0;
+    week.days.forEach((day,dIdx)=>{
+      totalDays++;
+      const dayDone=isDayComplete(week.w,dIdx,day);
+      if(dayDone){doneDays++;streakTmp++;if(streakTmp>streakBest)streakBest=streakTmp;}else streakTmp=0;
+      day.exs.forEach((ex,eIdx)=>{
+        totalEx++;wt++;phaseStats[week.ph].t++;
+        const key=ek(week.w,dIdx,eIdx);
+        const chk=DB.checks[key]||false;
+        const act=DB.actuals[key]??null;
+        const tgt=DB.targets[key]??ex.a;
+        if(chk){doneEx++;wd++;phaseStats[week.ph].d++;}
+        const realAmt = act??0;
+        const n=ex.n.toLowerCase();
+        if(n.includes('pompe')){pompes.t+=tgt;if(chk)pompes.a+=realAmt;}
+        else if(n.includes('squat')){squats.t+=tgt;if(chk)squats.a+=realAmt;}
+        else if(n.includes('abdo')){abdos.t+=tgt;if(chk)abdos.a+=realAmt;}
+        else if(n.includes('course')){course.t+=tgt;if(chk)course.a+=realAmt;}
+      });
+      const sessions=DB.sportSessions[dk(week.w,dIdx)]||[];
+      sportTotal+=sessions.length;
+      sportDuration+=sessions.reduce((s,x)=>s+(x.duration||0),0);
+    });
+    weekPcts.push({w:week.w,pct:wt>0?Math.round(wd/wt*100):0});
+  });
+
+  const globalPct=totalEx>0?Math.round(doneEx/totalEx*100):0;
+  return {totalDays,doneDays,totalEx,doneEx,globalPct,
+    pompes,squats,abdos,course,sportTotal,sportDuration,
+    phaseStats,weekPcts,streakBest};
+}
+
+function getAchievements(s){
+  return [
+    {icon:'🥊',name:'Premier Pas',desc:'Complète ta 1ère journée',unlocked:s.doneDays>=1},
+    {icon:'🔥',name:'3 jours d\'affilée',desc:'3 jours complets consécutifs',unlocked:s.streakBest>=3},
+    {icon:'💪',name:'Centurion',desc:'1 000 pompes cumulées',unlocked:s.pompes.a>=1000},
+    {icon:'🏃',name:'10 km dans les pattes',desc:'10 km de course cumulés',unlocked:s.course.a>=10},
+    {icon:'⚽',name:'Sportif complet',desc:'5 séances foot/basket',unlocked:s.sportTotal>=5},
+    {icon:'📅',name:'Semaine parfaite',desc:'Une semaine à 100%',unlocked:s.weekPcts.some(w=>w.pct===100)},
+    {icon:'🌟',name:'Mi-parcours',desc:'50% du programme fait',unlocked:s.globalPct>=50},
+    {icon:'🏆',name:'Mode Saitama',desc:'Programme 100% terminé',unlocked:s.doneDays===s.totalDays&&s.totalDays>0},
+  ];
+}
+
+function renderStats(){
+  const s=computeStats();
+  const achs=getAchievements(s);
+  const phaseNames={1:'Adaptation',2:'Construction',3:'Consolidation',4:'Progression',5:'Peak'};
+  const phaseCols={1:'#FFD700',2:'#5dba74',3:'#E8192C',4:'#ff8c42',5:'#cc44ff'};
+
+  let html=`<div class="kpi-grid">
+    <div class="kpi-card kc-yellow"><div class="kpi-label">Progression</div><div class="kpi-value">${s.globalPct}%</div><div class="kpi-sub">${s.doneEx}/${s.totalEx} exercices</div></div>
+    <div class="kpi-card kc-green"><div class="kpi-label">Jours complétés</div><div class="kpi-value">${s.doneDays}</div><div class="kpi-sub">sur ${s.totalDays} jours</div></div>
+    <div class="kpi-card kc-red"><div class="kpi-label">Pompes</div><div class="kpi-value">${Math.round(s.pompes.a)}</div><div class="kpi-sub">/ ${Math.round(s.pompes.t)} objectif</div></div>
+    <div class="kpi-card kc-blue"><div class="kpi-label">Km courus</div><div class="kpi-value">${s.course.a.toFixed(0)}</div><div class="kpi-sub">/ ${s.course.t} km objectif</div></div>
+    <div class="kpi-card kc-orange"><div class="kpi-label">Séances sport</div><div class="kpi-value">${s.sportTotal}</div><div class="kpi-sub">${Math.round(s.sportDuration/60*10)/10}h de jeu total</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-label">Meilleure série</div><div class="kpi-value">${s.streakBest}</div><div class="kpi-sub">jours consécutifs</div></div>
+  </div>`;
+
+  html+=`<div class="s-title">Progression par phase</div>`;
+  for(let p=1;p<=5;p++){
+    const ps=s.phaseStats[p];
+    const pct=ps.t>0?Math.round(ps.d/ps.t*100):0;
+    html+=`<div class="phase-bar-wrap">
+      <div class="pb-header"><span class="pb-label" style="color:${phaseCols[p]}">${phaseNames[p]}</span><span class="pb-pct" style="color:${phaseCols[p]}">${pct}%</span></div>
+      <div class="pb-track"><div class="pb-fill" style="width:${pct}%;background:${phaseCols[p]}"></div></div>
+    </div>`;
+  }
+
+  html+=`<div class="s-title">Complétion par semaine</div>
+  <div class="perf-chart"><div class="chart-title">% semaine par semaine</div>
+  <div class="bar-chart-scroll"><div class="bar-chart">`;
+  s.weekPcts.forEach(w=>{
+    const h=Math.max(2,w.pct);
+    const col=w.pct>=100?'#5dba74':w.pct>50?'#FFD700':w.pct>0?'#ff8c42':'#252525';
+    html+=`<div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill" style="height:${h}%;background:${col}"></div></div><div class="bar-lbl">S${w.w}</div></div>`;
+  });
+  html+=`</div></div></div>`;
+
+  html+=`<div class="s-title">Cumul exercices</div>
+  <div class="ex-totals">
+    <div class="et-row"><div class="et-left"><span class="et-icon">💪</span>Pompes</div><div><div class="et-actual">${Math.round(s.pompes.a)} <span style="font-size:11px;color:var(--muted)">reps</span></div><div class="et-target">/ ${Math.round(s.pompes.t)} reps</div></div></div>
+    <div class="et-row"><div class="et-left"><span class="et-icon">🦵</span>Squats</div><div><div class="et-actual">${Math.round(s.squats.a)} <span style="font-size:11px;color:var(--muted)">reps</span></div><div class="et-target">/ ${Math.round(s.squats.t)} reps</div></div></div>
+    <div class="et-row"><div class="et-left"><span class="et-icon">🔥</span>Abdos</div><div><div class="et-actual">${Math.round(s.abdos.a)} <span style="font-size:11px;color:var(--muted)">reps</span></div><div class="et-target">/ ${Math.round(s.abdos.t)} reps</div></div></div>
+    <div class="et-row"><div class="et-left"><span class="et-icon">🏃</span>Course</div><div><div class="et-actual">${s.course.a.toFixed(1)} <span style="font-size:11px;color:var(--muted)">km</span></div><div class="et-target">/ ${s.course.t} km</div></div></div>
+    <div class="et-row"><div class="et-left"><span class="et-icon">⚽</span>Sport</div><div><div class="et-actual">${s.sportTotal} <span style="font-size:11px;color:var(--muted)">séances</span></div><div class="et-target">${Math.round(s.sportDuration)} min total</div></div></div>
+  </div>`;
+
+  html+=`<div class="s-title">Succès</div><div class="achievements">`;
+  achs.forEach(a=>{
+    html+=`<div class="ach-card${a.unlocked?' unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-info"><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div></div>`;
+  });
+  html+=`</div>`;
+
+  document.getElementById('stats-content').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+//  IMPORT / EXPORT
+// ═══════════════════════════════════════════════
+function exportData(){
+  const payload={version:3,exportedAt:new Date().toISOString(),program:'OPM-6months',data:DB};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`opm_training_${new Date().toISOString().slice(0,10)}.json`; a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Export téléchargé !');
+}
+
+function importData(event){
+  const file=event.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const payload=JSON.parse(e.target.result);
+      if(payload.data && typeof payload.data==='object'){
+        DB=Object.assign({checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}},payload.data);
+        saveDB(); renderTraining(); toast('✅ Données importées !');
+      } else { toast('❌ Format invalide'); }
+    } catch(err){ toast('❌ Fichier JSON corrompu'); }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+function resetData(){
+  if(!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
+  DB={checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}};
+  saveDB(); renderTraining(); toast('🗑️ Réinitialisé');
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+
+// ══════════════════════════════════════════════════════
+//  GOOGLE DRIVE SYNC
+//  Uses Drive REST API v3 + appDataFolder (hidden, private)
+// ══════════════════════════════════════════════════════
+const DRIVE_FILE_NAME = 'modeste-training.json';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const CLIENT_ID = '365799344100-hnqhj2r0q8bpmbmg4a7tbb9022g45no3.apps.googleusercontent.com';
+
+let gsiTokenClient = null;
+let driveAccessToken = null;
+let driveFileId = null;
+let syncTimeout = null;
+let syncStatus = 'idle'; // idle | syncing | ok | error | offline
+
+// ── UI helpers ──
+function setSyncStatus(status, msg) {
+  syncStatus = status;
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const icons = {idle:'☁️', syncing:'🔄', ok:'✅', error:'⚠️', offline:'📴', disconnected:'🔌'};
+  const colors = {idle:'var(--muted)', syncing:'var(--blue)', ok:'var(--green)', error:'var(--orange)', offline:'var(--muted)', disconnected:'var(--muted)'};
+  el.textContent = (icons[status]||'☁️') + ' ' + (msg || status);
+  el.style.color = colors[status] || 'var(--muted)';
+}
+
+// ── Init Google client ──
+function initGoogleDrive() {
+  return new Promise((resolve) => {
+    if (!CLIENT_ID || CLIENT_ID === '%%CLIENT_ID%%') {
+      setSyncStatus('disconnected', 'Google Drive non configuré');
+      resolve(false); return;
+    }
+    const check = () => {
+      if (window.google && window.google.accounts) {
+        gsiTokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: DRIVE_SCOPE,
+          callback: async (resp) => {
+            if (resp.error) { setSyncStatus('error', 'Connexion refusée'); return; }
+            driveAccessToken = resp.access_token;
+            localStorage.setItem('gd_token', resp.access_token);
+            setSyncStatus('syncing', 'Connexion...');
+            await loadFromDrive();
+            document.getElementById('btn-gdrive-connect')?.style.setProperty('display','none');
+            document.getElementById('btn-gdrive-disconnect')?.style.setProperty('display','inline-flex');
+          }
+        });
+        resolve(true);
+      } else {
+        setTimeout(check, 300);
+      }
+    };
+    check();
+  });
+}
+
+// ── Connect ──
+async function connectGoogleDrive() {
+  await initGoogleDrive();
+  if (!gsiTokenClient) return;
+  setSyncStatus('syncing', 'Connexion...');
+  gsiTokenClient.requestAccessToken({prompt: 'consent'});
+}
+
+// ── Disconnect ──
+function disconnectGoogleDrive() {
+  if (driveAccessToken && window.google?.accounts?.oauth2) {
+    google.accounts.oauth2.revoke(driveAccessToken);
+  }
+  driveAccessToken = null; driveFileId = null;
+  localStorage.removeItem('gd_token');
+  localStorage.removeItem('gd_file_id');
+  setSyncStatus('disconnected', 'Déconnecté');
+  document.getElementById('btn-gdrive-connect')?.style.setProperty('display','inline-flex');
+  document.getElementById('btn-gdrive-disconnect')?.style.setProperty('display','none');
+  toast('🔌 Google Drive déconnecté');
+}
+
+// ── Find or create file in appDataFolder ──
+async function getOrCreateDriveFile() {
+  if (driveFileId) return driveFileId;
+  // Check cached file id
+  const cached = localStorage.getItem('gd_file_id');
+  if (cached) { driveFileId = cached; return driveFileId; }
+
+  // Search for existing file
+  const searchResp = await fetch(
+    `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'&fields=files(id,name)`,
+    { headers: { Authorization: `Bearer ${driveAccessToken}` } }
+  );
+  if (!searchResp.ok) throw new Error('Search failed');
+  const searchData = await searchResp.json();
+
+  if (searchData.files && searchData.files.length > 0) {
+    driveFileId = searchData.files[0].id;
+  } else {
+    // Create new file
+    const meta = { name: DRIVE_FILE_NAME, parents: ['appDataFolder'] };
+    const createResp = await fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(meta)
+    });
+    if (!createResp.ok) throw new Error('Create failed');
+    const createData = await createResp.json();
+    driveFileId = createData.id;
+  }
+  localStorage.setItem('gd_file_id', driveFileId);
+  return driveFileId;
+}
+
+// ── Save to Drive ──
+async function saveToDrive() {
+  if (!driveAccessToken) return;
+  try {
+    setSyncStatus('syncing', 'Sauvegarde...');
+    const fileId = await getOrCreateDriveFile();
+    const payload = { version: 3, savedAt: new Date().toISOString(), program: 'OPM-6months', data: DB };
+    const resp = await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,
+      {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }
+    );
+    if (!resp.ok) throw new Error('Upload failed: ' + resp.status);
+    const now = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+    setSyncStatus('ok', `Sauvegardé à ${now}`);
+  } catch(e) {
+    console.error('Drive save error:', e);
+    // Token may be expired — clear it
+    if (e.message.includes('401') || e.message.includes('403')) {
+      driveAccessToken = null;
+      localStorage.removeItem('gd_token');
+      setSyncStatus('error', 'Session expirée — reconnecte-toi');
+    } else {
+      setSyncStatus('error', 'Erreur Drive');
+    }
+  }
+}
+
+// ── Load from Drive ──
+async function loadFromDrive() {
+  if (!driveAccessToken) return false;
+  try {
+    setSyncStatus('syncing', 'Chargement...');
+    const fileId = await getOrCreateDriveFile();
+    const resp = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+      { headers: { Authorization: `Bearer ${driveAccessToken}` } }
+    );
+    if (resp.status === 404) { setSyncStatus('ok', 'Nouveau fichier Drive'); return false; }
+    if (!resp.ok) throw new Error('Download failed: ' + resp.status);
+    const text = await resp.text();
+    if (!text || text.trim() === '') { setSyncStatus('ok', 'Drive vide'); return false; }
+    const payload = JSON.parse(text);
+    if (payload.data && typeof payload.data === 'object') {
+      DB = Object.assign({checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}}, payload.data);
+      saveDB(); // also update localStorage
+      renderTraining();
+      const savedAt = payload.savedAt ? new Date(payload.savedAt).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '?';
+      setSyncStatus('ok', `Chargé (${savedAt})`);
+      toast('☁️ Données Drive chargées !');
+      return true;
+    }
+  } catch(e) {
+    console.error('Drive load error:', e);
+    setSyncStatus('error', 'Erreur chargement Drive');
+  }
+  return false;
+}
+
+// ── Debounced auto-save ──
+function scheduleDriveSync() {
+  if (!driveAccessToken) return;
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => saveToDrive(), 2000); // 2s debounce
+}
+
+// ── Try silent reconnect with cached token ──
+async function trySilentReconnect() {
+  const cachedToken = localStorage.getItem('gd_token');
+  if (!cachedToken || !CLIENT_ID || CLIENT_ID === '%%CLIENT_ID%%') return;
+  // Verify token is still valid
+  try {
+    const resp = await fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${cachedToken}`);
+    if (resp.ok) {
+      driveAccessToken = cachedToken;
+      document.getElementById('btn-gdrive-connect')?.style.setProperty('display','none');
+      document.getElementById('btn-gdrive-disconnect')?.style.setProperty('display','inline-flex');
+      await loadFromDrive();
+    } else {
+      localStorage.removeItem('gd_token');
+      setSyncStatus('disconnected', 'Reconnexion requise');
+    }
+  } catch(e) {
+    setSyncStatus('offline', 'Hors ligne');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+loadDB();
+renderTraining();
+setTimeout(()=>{ document.getElementById('wk1')?.classList.add('open'); },80);
+// Try to reconnect Google Drive silently
+window.addEventListener('load', () => {
+  initGoogleDrive().then(() => trySilentReconnect());
+  // Mirror sync status to export page
+  const observer = new MutationObserver(() => {
+    const s2 = document.getElementById('sync-status-2');
+    const s1 = document.getElementById('sync-status');
+    if(s2 && s1) { s2.textContent = s1.textContent; s2.style.color = s1.style.color; }
+  });
+  const s1 = document.getElementById('sync-status');
+  if(s1) observer.observe(s1, {childList:true, characterData:true, subtree:true});
+});
+</script>
+
+<div id="ios-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1a1a1a;border-top:1px solid #333;padding:14px 16px;font-family:sans-serif;">
+  <div style="display:flex;align-items:center;gap:12px;max-width:500px;margin:0 auto;">
+    <span style="font-size:28px">🥊</span>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:700;color:#f0f0f0">Installer Modeste Training</div>
+      <div style="font-size:11px;color:#888;margin-top:2px">Appuie sur <strong style="color:#FFD700">Partager</strong> puis <strong style="color:#FFD700">Sur l'écran d'accueil</strong></div>
+    </div>
+    <button onclick="document.getElementById('ios-banner').style.display='none';localStorage.setItem('ios-banner-dismissed','1')" style="background:none;border:none;color:#666;font-size:20px;cursor:pointer;padding:4px">×</button>
+  </div>
+</div>
+<script>
+  // Show iOS install banner if not already installed and not dismissed
+  window.addEventListener('DOMContentLoaded', () => {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.navigator.standalone;
+    const dismissed = localStorage.getItem('ios-banner-dismissed');
+    if (isIOS && !isStandalone && !dismissed) {
+      setTimeout(() => {
+        document.getElementById('ios-banner').style.display = 'block';
+      }, 2000);
+    }
+  });
+</script>
+
+<script>
+// Service Worker for offline support
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'modeste-training-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/mdst-training/'])));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/')))
+      );
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      ));
+    });
+  `;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swURL = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL).catch(() => {});
+}
+</script>
+</body>
+</html>
