@@ -27,47 +27,55 @@
         { src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23080808'/%3E%3Ccircle cx='256' cy='256' r='200' fill='none' stroke='%23E8192C' stroke-width='18'/%3E%3Ctext x='256' y='200' font-family='serif' font-weight='900' font-size='160' fill='%23E8192C' text-anchor='middle' dominant-baseline='middle'%3E%F0%9F%A5%8A%3C/text%3E%3Ctext x='256' y='360' font-family='Arial Black' font-weight='900' font-size='58' fill='%23FFD700' text-anchor='middle'%3ETRAINING%3C/text%3E%3C/svg%3E", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
       ]
     };
-    const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/manifest+json'});
-    const manifestURL = URL.createObjectURL(blob);
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = manifestURL;
-    document.head.appendChild(link);
+    // Le manifest est désormais construit plus bas à partir du LOGO (PNG 192/512) pour une
+    // icône cohérente sur Android comme sur iOS. (manifestData ci-dessus n'est plus injecté.)
+    void manifestData;
+
+    // Décline une image (le logo) en PNG carré — Android attend du 192/512 en image/png.
+    function rasterizeIcon(src, size){
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          try{
+            const c = document.createElement('canvas');
+            c.width = c.height = size;
+            c.getContext('2d').drawImage(img, 0, 0, size, size);
+            resolve(c.toDataURL('image/png'));
+          } catch(e){ resolve(src); }
+        };
+        img.onerror = () => resolve(src);
+        img.src = src;
+      });
+    }
+    async function buildManifestFromLogo(logoSrc){
+      const [i192, i512] = await Promise.all([rasterizeIcon(logoSrc,192), rasterizeIcon(logoSrc,512)]);
+      const m = {
+        name: "Modeste Training", short_name: "Modeste Training",
+        description: "Mon programme One Punch Man — 6 mois",
+        start_url: "./", display: "standalone",
+        background_color: "#080808", theme_color: "#080808", orientation: "portrait",
+        icons: [
+          { src: i192, sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: i512, sizes: "512x512", type: "image/png", purpose: "any" }
+        ]
+      };
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:'application/manifest+json'}));
+      document.head.appendChild(link);
+    }
   </script>
 
   <!-- Apple touch icon inline SVG via canvas -->
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      // Generate apple-touch-icon via canvas and inject
-      const canvas = document.createElement('canvas');
-      canvas.width = 180; canvas.height = 180;
-      const ctx = canvas.getContext('2d');
-      // Background
-      ctx.fillStyle = '#080808';
-      const r = 36;
-      ctx.beginPath();
-      ctx.moveTo(r,0); ctx.lineTo(180-r,0);
-      ctx.quadraticCurveTo(180,0,180,r);
-      ctx.lineTo(180,180-r); ctx.quadraticCurveTo(180,180,180-r,180);
-      ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
-      ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
-      ctx.closePath(); ctx.fill();
-      // Red circle
-      ctx.strokeStyle = '#E8192C'; ctx.lineWidth = 7;
-      ctx.beginPath(); ctx.arc(90,90,72,0,Math.PI*2); ctx.stroke();
-      // Fist emoji
-      ctx.font = '68px serif';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('🥊', 90, 78);
-      // Text
-      ctx.fillStyle = '#FFD700';
-      ctx.font = 'bold 16px Arial';
-      ctx.fillText('TRAINING', 90, 148);
-      // Inject
+      // apple-touch-icon = le logo (chat en maillot Pepsi)
       const iconLink = document.createElement('link');
       iconLink.rel = 'apple-touch-icon';
       iconLink.href = 'data:image/jpeg;base64,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';
       document.head.appendChild(iconLink);
+      // Manifest Android construit à partir du MÊME logo (PNG 192/512) → branding cohérent
+      buildManifestFromLogo(iconLink.href);
     });
   </script>
 <title>Modeste Training</title>
@@ -76,7 +84,7 @@
 :root {
   --red:#E8192C; --yellow:#FFD700; --blue:#4a9eff; --green:#5dba74; --orange:#ff8c42; --purple:#cc44ff;
   --black:#080808; --dark:#111; --card:#191919; --card2:#1f1f1f; --border:#252525; --border2:#2e2e2e;
-  --text:#f0f0f0; --muted:#777; --muted2:#444;
+  --text:#f0f0f0; --muted:#888; --muted2:#6a6a6a;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -136,6 +144,19 @@ body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;m
 /* DAY */
 .day-row{border-bottom:1px solid var(--border);}
 .day-row:last-child{border-bottom:none;}
+.day-row.today{background:rgba(255,215,0,.06);box-shadow:inset 3px 0 0 var(--yellow);}
+.today-badge{font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 6px;border-radius:3px;background:var(--yellow);color:#080808;}
+.rest-timer{position:fixed;right:14px;bottom:18px;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.rest-fab{width:52px;height:52px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .12s,background .2s;}
+.rest-fab:active{transform:scale(.94);}
+.rest-fab.running{background:var(--yellow);color:#080808;}
+.rest-panel{display:none;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,.45);}
+.rest-panel.open{display:block;}
+.rest-count{font-family:'Bebas Neue',sans-serif;font-size:34px;text-align:center;color:var(--yellow);line-height:1;margin-bottom:8px;letter-spacing:1px;}
+.rest-presets{display:flex;gap:6px;}
+.rest-presets button{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;padding:8px 10px;cursor:pointer;white-space:nowrap;transition:border-color .15s;}
+.rest-presets button:hover{border-color:var(--muted);}
+.rest-presets .rest-stop{flex:0 0 auto;color:var(--red);border-color:rgba(232,25,44,.3);}
 .day-stripe-bar{height:2px;}
 .s-red{background:var(--red);}.s-yellow{background:var(--yellow);}.s-green{background:var(--green);}.s-blue{background:var(--blue);}.s-orange{background:var(--orange);}
 .day-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px 4px;}
@@ -256,6 +277,9 @@ body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;m
 .sport-session-type{background:rgba(255,255,255,.06);border:1px solid rgba(255,140,66,.3);border-radius:4px;color:var(--orange);font-family:'Barlow',sans-serif;font-size:11px;padding:3px 5px;outline:none;}
 .sport-session-del{background:transparent;border:none;color:var(--muted2);font-size:14px;cursor:pointer;padding:2px 4px;border-radius:3px;transition:all .15s;}
 .sport-session-del:hover{color:var(--red);background:rgba(232,25,44,.1);}
+.sport-step{width:22px;height:22px;flex-shrink:0;background:rgba(255,140,66,.08);border:1px solid rgba(255,140,66,.3);border-radius:5px;color:var(--orange);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.sport-step:hover{background:rgba(255,140,66,.18);}
+.sport-step:active{transform:scale(.92);}
 
 /* IO */
 .io-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
@@ -315,6 +339,7 @@ body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;m
 <div class="hero-tag">Programme · 22 juin 2026 → 1er jan 2027</div>
     <div class="hero-title">ONE<br><span class="r">PUNCH</span><br>MAN</div>
     <div class="hero-meta" id="hero-meta">Chargement…</div>
+    <button class="btn btn-blue" style="margin:14px auto 0;display:flex;" onclick="goToToday()">📍 Ma séance du jour</button>
     <div class="hero-bar"></div>
   </div>
   <div class="pgbar-wrap"><div class="pgbar-fill" id="pgbar" style="width:0%"></div></div>
@@ -356,6 +381,23 @@ body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;m
       </div>
     </div>
 
+    <div class="io-section">
+      <div class="io-title">🔔 Rappel quotidien</div>
+      <div class="io-desc">Reçois une notification si tu n'as pas validé ta séance du jour (rappel à l'ouverture de l'app après l'heure choisie).</div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text);">
+        <input type="checkbox" id="rem-toggle" onchange="toggleReminder(this.checked)"> Activer le rappel
+      </label>
+      <div id="rem-time-row" style="display:none;align-items:center;gap:8px;margin-top:8px;">
+        <span style="font-size:13px;color:var(--muted);">Heure :</span>
+        <input type="time" id="rem-time" onchange="saveReminderTime(this.value)" style="background:var(--card);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 8px;font-family:'Barlow',sans-serif;">
+      </div>
+      <div id="rem-note" style="font-size:11px;color:var(--muted2);margin-top:6px;"></div>
+    </div>
+    <div class="io-section">
+      <div class="io-title">📸 Partager ma progression</div>
+      <div class="io-desc">Génère une image de ton avancée dans le challenge One Punch Man, prête à partager.</div>
+      <div class="io-btns"><button class="btn btn-blue" onclick="shareProgress()">📸 Créer l'image</button></div>
+    </div>
     <div class="io-section">
       <div class="io-title">💾 Exporter mes données</div>
       <div class="io-desc">Télécharge un fichier JSON de toutes tes réalisations et personnalisations. À garder précieusement !</div>
@@ -403,10 +445,25 @@ const PHASE_INFO = {
 //   sportSessions: { "w{W}-d{D}": [{type,duration}] } // sport sessions
 // }
 const SK = 'opm_v3';
-let DB = {checks:{}, actuals:{}, targets:{}, customExs:{}, sportSessions:{}};
+const SCHEMA_VERSION = 3;
+function blankDB(){ return {checks:{}, actuals:{}, targets:{}, customExs:{}, sportSessions:{}, schema_version: SCHEMA_VERSION}; }
+let DB = blankDB();
+
+// Migration douce et défensive : complète les clés manquantes et garantit que chacune est
+// bien un objet, quel que soit l'âge ou l'état du fichier chargé (localStorage ou Drive).
+function migrateDB(raw){
+  const out = blankDB();
+  if(raw && typeof raw === 'object'){
+    ['checks','actuals','targets','customExs','sportSessions'].forEach(k => {
+      if(raw[k] && typeof raw[k] === 'object') out[k] = raw[k];
+    });
+  }
+  out.schema_version = SCHEMA_VERSION;
+  return out;
+}
 
 function loadDB(){
-  try{ const r=localStorage.getItem(SK); if(r) DB=Object.assign({checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}},JSON.parse(r)); }
+  try{ const r=localStorage.getItem(SK); if(r) DB=migrateDB(JSON.parse(r)); }
   catch(e){}
 }
 function saveDB(){
@@ -417,21 +474,134 @@ function saveDB(){
 function ek(w,d,e){ return `w${w}-d${d}-e${e}`; }
 function dk(w,d){ return `w${w}-d${d}`; }
 
+// Retour haptique (mobile) — best-effort, ignoré là où non supporté
+function haptic(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+
+// ── « Aujourd'hui » : repérage du jour courant dans le programme ──
+// Le programme démarre le lundi 22 juin 2026 ; jour(w,dIdx) = départ + (w-1)*7 + dIdx.
+const PROGRAM_START = new Date(2026, 5, 22);
+function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function findTodayDay(){
+  const idx = Math.round((startOfDay(new Date()) - PROGRAM_START) / 86400000);
+  if(idx < 0) return null;                       // avant le début du programme
+  const w = Math.floor(idx/7) + 1;
+  const dIdx = idx % 7;
+  const wk = PROGRAM_BASE.find(x => x.w === w);
+  if(!wk || dIdx >= wk.days.length) return null; // après la fin du programme
+  return { w, dIdx };
+}
+function isTodayCell(w, d){ const t = findTodayDay(); return !!t && t.w === w && t.dIdx === d; }
+function goToToday(){
+  const t = findTodayDay();
+  if(!t){ toast('📅 Aujourd\'hui est hors du programme'); return; }
+  const card = document.getElementById('wk'+t.w);
+  if(card && !card.classList.contains('open')){
+    card.classList.add('open');
+    card.querySelector('.week-hdr')?.setAttribute('aria-expanded','true');
+  }
+  document.getElementById(`dayrow-${t.w}-${t.dIdx}`)?.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// ── Minuteur de repos entre séries ──
+let restInterval = null, restRemaining = 0;
+function fmtMMSS(s){ const m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
+function renderRest(){ const el=document.getElementById('rest-count'); if(el) el.textContent=fmtMMSS(Math.max(0,restRemaining)); }
+function toggleRestPanel(){ document.getElementById('rest-panel')?.classList.toggle('open'); }
+function startRest(sec){
+  stopRest(true);
+  restRemaining = sec;
+  document.getElementById('rest-panel')?.classList.add('open');
+  document.getElementById('rest-fab')?.classList.add('running');
+  renderRest();
+  haptic(15);
+  restInterval = setInterval(()=>{
+    restRemaining--;
+    renderRest();
+    if(restRemaining<=0){
+      clearInterval(restInterval); restInterval=null;
+      document.getElementById('rest-fab')?.classList.remove('running');
+      haptic([120,60,120]);
+      restBeep();
+      toast('⏱️ Repos terminé — go !');
+    }
+  }, 1000);
+}
+function stopRest(silent){
+  if(restInterval){ clearInterval(restInterval); restInterval=null; }
+  restRemaining = 0; renderRest();
+  document.getElementById('rest-fab')?.classList.remove('running');
+  if(!silent) document.getElementById('rest-panel')?.classList.remove('open');
+}
+function restBeep(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx = new Ctx();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type='sine'; o.frequency.value=880;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.4);
+    o.start(); o.stop(ctx.currentTime+0.42);
+  }catch(e){}
+}
+
 // ═══════════════════════════════════════════════
 //  PROGRAM — merge base + custom
 // ═══════════════════════════════════════════════
+// Facteur de réduction des reps un jour où une séance sport est ajoutée (foot/basket
+// remplacent en partie la séance). 24 = round(0.6×40), 30 = round(0.6×50) — facteur
+// constant sur tout le programme d'origine.
+const SPORT_FACTOR = 0.6;
+const SPORT_NOTE = "⚽🏀 Sport ajouté — il remplace la course du jour. Reps réduites (l'essentiel, c'est le match).";
+
 function getProgram(){
-  // Deep clone
-  return PROGRAM_BASE.map(week => ({
-    ...week,
-    days: week.days.map((day, dIdx) => {
-      const key = dk(week.w, dIdx);
-      const customs = DB.customExs[key] || [];
-      // merge custom exercises (tagged with custom:true)
-      const allExs = [...day.exs, ...customs.map(c => ({...c, custom:true}))];
-      return { ...day, exs: allExs };
-    })
-  }));
+  return PROGRAM_BASE.map(week => {
+    // Template "Modéré" de la semaine : reps pleines + la bonne distance de course.
+    // Sert à reconstruire un mercredi nettoyé (sans le foot/basket imposé).
+    const modTemplate = week.days.find(d => d.type === 'moderate');
+    return {
+      ...week,
+      days: week.days.map((day, dIdx) => {
+        const key = dk(week.w, dIdx);
+
+        // 1) NETTOYAGE des séances sport IMPOSÉES : un jour 'sport' du programme de base
+        //    redevient un jour normal "Modéré" (reps pleines + course), sans Foot/Basket.
+        //    L'utilisatrice ajoutera ses séances elle-même.
+        let base;
+        if (day.type === 'sport') {
+          const tmpl = modTemplate || day;
+          base = {
+            ...day,
+            type: 'moderate',
+            label: 'Modéré',
+            color: 'yellow',
+            note: null,
+            exs: tmpl.exs.map(e => ({ ...e }))   // clone : reps pleines + course de la semaine
+          };
+        } else {
+          base = { ...day, exs: day.exs.map(e => ({ ...e })) };   // clone défensif (jamais muter PROGRAM_BASE)
+        }
+
+        // 2) Exercices personnalisés ajoutés par l'utilisatrice (après les exercices de base)
+        const customs = DB.customExs[key] || [];
+        let allExs = [...base.exs, ...customs.map(c => ({ ...c, custom: true }))];
+
+        // 3) AJUSTEMENT DYNAMIQUE : si une séance sport est ajoutée ce jour-là, on réduit les
+        //    reps à 60% et on affiche la note. La course reste listée (sécurité des index de
+        //    données loggées) mais la note indique qu'elle est remplacée par le sport.
+        let note = base.note;
+        const hasSport = (DB.sportSessions[key] || []).length > 0;
+        if (hasSport) {
+          allExs = allExs.map(e => e.u === 'reps' ? { ...e, a: Math.round(e.a * SPORT_FACTOR) } : e);
+          note = SPORT_NOTE + (base.note ? ' · ' + base.note : '');
+        }
+
+        return { ...base, exs: allExs, note };
+      })
+    };
+  });
 }
 
 // ═══════════════════════════════════════════════
@@ -480,7 +650,9 @@ function renderTraining(){
     const ringCol = pct>=100?'#5dba74':pct>50?'#FFD700':'#E8192C';
 
     html += `<div class="week-wrap"><div class="week-card" id="wk${week.w}">
-      <div class="week-hdr" onclick="toggleWeek(${week.w})">
+      <div class="week-hdr" role="button" tabindex="0" aria-expanded="false" aria-controls="wkb${week.w}"
+        onclick="toggleWeek(${week.w})"
+        onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleWeek(${week.w});}">
         <div class="wh-left">
           <div class="w-num">${String(week.w).padStart(2,'0')}</div>
           <div class="w-info">
@@ -521,13 +693,15 @@ function renderDay(wNum, dIdx, day, week){
   const allDone = isDayComplete(wNum, dIdx, day);
   const hasSport = sessions.length > 0;
   const dayColor = hasSport ? 'orange' : day.color;
+  const isToday = isTodayCell(wNum, dIdx);
 
-  let html = `<div class="day-row" id="dayrow-${wNum}-${dIdx}">
+  let html = `<div class="day-row${isToday?' today':''}" id="dayrow-${wNum}-${dIdx}">
     <div class="day-stripe-bar ${stripeCls(dayColor)}"></div>
     <div class="day-hdr">
       <div class="day-hdr-left">
         <span class="day-name">${day.name}</span>
         <span class="day-date">${day.date}</span>
+        ${isToday ? '<span class="today-badge">AUJOURD\'HUI</span>' : ''}
         <span class="day-badge ${badgeCls(day.color)}">${day.label}</span>
         ${hasSport ? `<span class="sport-badge" title="${sessions.length} séance(s) sport">⚽ ×${sessions.length}</span>` : ''}
       </div>
@@ -545,11 +719,13 @@ function renderDay(wNum, dIdx, day, week){
         <option value="foot"${s.type==='foot'?' selected':''}>⚽ Foot</option>
         <option value="basket"${s.type==='basket'?' selected':''}>🏀 Basket</option>
       </select>
+      <button class="sport-step" onclick="stepSportDuration(${wNum},${dIdx},${sIdx},-5)" aria-label="Retirer 5 minutes">−</button>
       <input class="sport-session-duration" type="number" min="0" placeholder="min"
         value="${s.duration||''}" title="Durée en minutes"
         onchange="updateSportDuration(${wNum},${dIdx},${sIdx},this.value)">
+      <button class="sport-step" onclick="stepSportDuration(${wNum},${dIdx},${sIdx},5)" aria-label="Ajouter 5 minutes">+</button>
       <span style="font-size:10px;color:var(--muted)">min</span>
-      <button class="sport-session-del" onclick="removeSportSession(${wNum},${dIdx},${sIdx})" title="Supprimer">×</button>
+      <button class="sport-session-del" onclick="removeSportSession(${wNum},${dIdx},${sIdx})" aria-label="Supprimer la séance sport" title="Supprimer">×</button>
     </div>`;
   });
 
@@ -603,8 +779,10 @@ function renderExItem(wNum, dIdx, eIdx, ex, totalExs){
   const isCustom = ex.custom === true;
   // Calculate real ex index considering base + custom split
   return `<div class="ex-item" id="ex-${wNum}-${dIdx}-${eIdx}">
-    <div class="ex-check${chk?' checked':''}" onclick="toggleCheck(${wNum},${dIdx},${eIdx})"></div>
-    <span class="ex-icon">${ex.i||'🏋️'}</span>
+    <div class="ex-check${chk?' checked':''}" role="checkbox" aria-checked="${chk}" tabindex="0" aria-label="Valider ${ex.n}"
+      onclick="toggleCheck(${wNum},${dIdx},${eIdx})"
+      onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(${wNum},${dIdx},${eIdx});}"></div>
+    <span class="ex-icon" aria-hidden="true">${ex.i||'🏋️'}</span>
     <div class="ex-name-wrap"><span class="ex-name">${ex.n}</span></div>
     <div class="ex-target-wrap">
       <input class="ex-target-input" type="number" min="0"
@@ -621,7 +799,7 @@ function renderExItem(wNum, dIdx, eIdx, ex, totalExs){
         oninput="colorInput(this, DB.targets['${key}'] ?? ${ex.a})">
       <span class="ex-unit-lbl">${ex.u}</span>
     </div>
-    <button class="ex-del-btn" onclick="deleteEx(${wNum},${dIdx},${eIdx},${isCustom})" title="${isCustom?'Supprimer':'Masquer'}">×</button>
+    <button class="ex-del-btn" onclick="deleteEx(${wNum},${dIdx},${eIdx},${isCustom})" aria-label="${isCustom?'Supprimer':'Masquer'} ${ex.n}" title="${isCustom?'Supprimer':'Masquer'}">×</button>
   </div>`;
 }
 
@@ -632,6 +810,7 @@ function toggleCheck(wNum, dIdx, eIdx){
   const key = ek(wNum,dIdx,eIdx);
   const newVal = !DB.checks[key];
   DB.checks[key] = newVal;
+  haptic(newVal ? 18 : 8);
   // auto-fill actual if checking without value
   const prog = getProgram();
   const week = prog.find(w=>w.w===wNum);
@@ -763,6 +942,17 @@ function updateSportDuration(wNum, dIdx, sIdx, val){
   saveDB();
 }
 
+// Stepper tactile (mobile) — durée de séance sport par pas de 5 min
+function stepSportDuration(wNum, dIdx, sIdx, delta){
+  const key = dk(wNum,dIdx);
+  const s = DB.sportSessions[key]?.[sIdx];
+  if(!s) return;
+  s.duration = Math.max(0, (parseFloat(s.duration)||0) + delta);
+  haptic(10);
+  saveDB();
+  redrawDay(wNum,dIdx);
+}
+
 // ═══════════════════════════════════════════════
 //  REDRAW SINGLE DAY (without full re-render)
 // ═══════════════════════════════════════════════
@@ -848,7 +1038,11 @@ function updateHeroMeta(){
 }
 
 function toggleWeek(wNum){
-  document.getElementById('wk'+wNum)?.classList.toggle('open');
+  const card = document.getElementById('wk'+wNum);
+  if(!card) return;
+  const open = card.classList.toggle('open');
+  const hdr = card.querySelector('.week-hdr');
+  if(hdr) hdr.setAttribute('aria-expanded', open ? 'true' : 'false');
 }
 
 // ═══════════════════════════════════════════════
@@ -965,6 +1159,46 @@ function renderStats(){
 // ═══════════════════════════════════════════════
 //  IMPORT / EXPORT
 // ═══════════════════════════════════════════════
+// Génère et partage (ou télécharge) une image de progression du challenge
+async function shareProgress(){
+  let doneEx=0,totalEx=0,doneDays=0,totalDays=0,sportCount=0;
+  getProgram().forEach(week=>{
+    week.days.forEach((day,dIdx)=>{
+      totalDays++;
+      if(isDayComplete(week.w,dIdx,day)) doneDays++;
+      day.exs.forEach((_,eIdx)=>{ totalEx++; if(DB.checks[ek(week.w,dIdx,eIdx)]) doneEx++; });
+      sportCount += (DB.sportSessions[dk(week.w,dIdx)]||[]).length;
+    });
+  });
+  const pct = totalEx ? Math.round(doneEx/totalEx*100) : 0;
+
+  const W=1080,H=1080;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#080808'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#E8192C'; ctx.lineWidth=14; ctx.strokeRect(40,40,W-80,H-80);
+  ctx.textAlign='center';
+  ctx.fillStyle='#E8192C'; ctx.font='800 64px Arial, sans-serif'; ctx.fillText('ONE PUNCH MAN', W/2, 150);
+  ctx.fillStyle='#FFD700'; ctx.font='700 34px Arial, sans-serif'; ctx.fillText('CHALLENGE · 6 MOIS', W/2, 205);
+  ctx.font='130px serif'; ctx.fillText('🐈‍⬛', W/2, 380);
+  ctx.fillStyle='#fff'; ctx.font='800 300px Arial, sans-serif'; ctx.fillText(pct+'%', W/2, 660);
+  ctx.fillStyle='#fff'; ctx.font='700 50px Arial, sans-serif'; ctx.fillText('DU PROGRAMME ACCOMPLI', W/2, 758);
+  ctx.fillStyle='#9a9a9a'; ctx.font='500 40px Arial, sans-serif'; ctx.fillText(`${doneDays}/${totalDays} jours · ${doneEx}/${totalEx} exercices`, W/2, 850);
+  ctx.fillStyle='#FF8C42'; ctx.font='600 38px Arial, sans-serif'; ctx.fillText(`⚽ ${sportCount} séance(s) sport`, W/2, 912);
+
+  c.toBlob(async (blob)=>{
+    if(!blob){ toast('❌ Erreur image'); return; }
+    const file=new File([blob],`opm-progression-${pct}pct.png`,{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:'Modeste Training',text:`${pct}% du challenge One Punch Man 🥊`}); return; }catch(e){}
+    }
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`opm-progression-${pct}pct.png`; a.click();
+    URL.revokeObjectURL(url);
+    toast('📸 Image enregistrée !');
+  },'image/png');
+}
+
 function exportData(){
   const payload={version:3,exportedAt:new Date().toISOString(),program:'OPM-6months',data:DB};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
@@ -982,7 +1216,7 @@ function importData(event){
     try{
       const payload=JSON.parse(e.target.result);
       if(payload.data && typeof payload.data==='object'){
-        DB=Object.assign({checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}},payload.data);
+        DB=migrateDB(payload.data);
         saveDB(); renderTraining(); toast('✅ Données importées !');
       } else { toast('❌ Format invalide'); }
     } catch(err){ toast('❌ Fichier JSON corrompu'); }
@@ -993,7 +1227,7 @@ function importData(event){
 
 function resetData(){
   if(!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
-  DB={checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}};
+  DB=blankDB();
   saveDB(); renderTraining(); toast('🗑️ Réinitialisé');
 }
 
@@ -1023,6 +1257,13 @@ let driveFileId = null;
 let syncTimeout = null;
 let syncStatus = 'idle'; // idle | syncing | ok | error | offline
 
+// fetch avec timeout : empêche un appel réseau de laisser la sync coincée indéfiniment.
+function fetchWithTimeout(url, opts = {}, ms = 8000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
 // ── UI helpers ──
 function setSyncStatus(status, msg) {
   syncStatus = status;
@@ -1041,6 +1282,8 @@ function initGoogleDrive() {
       setSyncStatus('disconnected', 'Google Drive non configuré');
       resolve(false); return;
     }
+    let tries = 0;
+    const MAX_TRIES = 33; // ~10 s à 300 ms : si la lib Google ne charge pas, on abandonne proprement
     const check = () => {
       if (window.google && window.google.accounts) {
         gsiTokenClient = google.accounts.oauth2.initTokenClient({
@@ -1054,11 +1297,17 @@ function initGoogleDrive() {
             await loadFromDrive();
             document.getElementById('btn-gdrive-connect')?.style.setProperty('display','none');
             document.getElementById('btn-gdrive-disconnect')?.style.setProperty('display','inline-flex');
-          }
+          },
+          // error_callback : échecs hors-protocole (popup fermée, interaction requise, réseau).
+          // Sans lui, ces erreurs tombaient dans le vide → statut figé sur « Connexion... ».
+          error_callback: () => { setSyncStatus('disconnected', 'Connexion requise'); }
         });
         resolve(true);
-      } else {
+      } else if (tries++ < MAX_TRIES) {
         setTimeout(check, 300);
+      } else {
+        setSyncStatus('disconnected', 'Google indisponible');
+        resolve(false); // lib Google jamais chargée (hors-ligne / script bloqué)
       }
     };
     check();
@@ -1095,7 +1344,7 @@ async function getOrCreateDriveFile() {
   if (cached) { driveFileId = cached; return driveFileId; }
 
   // Search for existing file
-  const searchResp = await fetch(
+  const searchResp = await fetchWithTimeout(
     `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'&fields=files(id,name)`,
     { headers: { Authorization: `Bearer ${driveAccessToken}` } }
   );
@@ -1107,7 +1356,7 @@ async function getOrCreateDriveFile() {
   } else {
     // Create new file
     const meta = { name: DRIVE_FILE_NAME, parents: ['appDataFolder'] };
-    const createResp = await fetch('https://www.googleapis.com/drive/v3/files', {
+    const createResp = await fetchWithTimeout('https://www.googleapis.com/drive/v3/files', {
       method: 'POST',
       headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(meta)
@@ -1127,7 +1376,7 @@ async function saveToDrive() {
     setSyncStatus('syncing', 'Sauvegarde...');
     const fileId = await getOrCreateDriveFile();
     const payload = { version: 3, savedAt: new Date().toISOString(), program: 'OPM-6months', data: DB };
-    const resp = await fetch(
+    const resp = await fetchWithTimeout(
       `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,
       {
         method: 'PATCH',
@@ -1157,7 +1406,7 @@ async function loadFromDrive() {
   try {
     setSyncStatus('syncing', 'Chargement...');
     const fileId = await getOrCreateDriveFile();
-    const resp = await fetch(
+    const resp = await fetchWithTimeout(
       `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
       { headers: { Authorization: `Bearer ${driveAccessToken}` } }
     );
@@ -1167,7 +1416,7 @@ async function loadFromDrive() {
     if (!text || text.trim() === '') { setSyncStatus('ok', 'Drive vide'); return false; }
     const payload = JSON.parse(text);
     if (payload.data && typeof payload.data === 'object') {
-      DB = Object.assign({checks:{},actuals:{},targets:{},customExs:{},sportSessions:{}}, payload.data);
+      DB = migrateDB(payload.data);
       saveDB(); // also update localStorage
       renderTraining();
       const savedAt = payload.savedAt ? new Date(payload.savedAt).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '?';
@@ -1195,7 +1444,7 @@ async function trySilentReconnect() {
   if (!cachedToken || !CLIENT_ID || CLIENT_ID === '%%CLIENT_ID%%') return;
   // Verify token is still valid
   try {
-    const resp = await fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${cachedToken}`);
+    const resp = await fetchWithTimeout(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${cachedToken}`);
     if (resp.ok) {
       driveAccessToken = cachedToken;
       document.getElementById('btn-gdrive-connect')?.style.setProperty('display','none');
@@ -1211,11 +1460,79 @@ async function trySilentReconnect() {
 }
 
 // ═══════════════════════════════════════════════
+//  RAPPEL QUOTIDIEN (notification locale, par appareil)
+//  Best-effort : rappel à l'ouverture si l'heure est passée et la séance du jour non validée.
+// ═══════════════════════════════════════════════
+const REM_KEY = 'opm_reminder';
+function getReminder(){ try{ return JSON.parse(localStorage.getItem(REM_KEY)) || {enabled:false,time:'18:00'}; }catch(e){ return {enabled:false,time:'18:00'}; } }
+function saveReminder(r){ try{ localStorage.setItem(REM_KEY, JSON.stringify(r)); }catch(e){} }
+
+async function toggleReminder(enabled){
+  const r = getReminder(); r.enabled = enabled;
+  if(enabled && ('Notification' in window)){
+    if(Notification.permission === 'default'){
+      const p = await Notification.requestPermission();
+      if(p !== 'granted'){ r.enabled = false; toast('🔕 Notifications refusées'); }
+    } else if(Notification.permission === 'denied'){
+      r.enabled = false; toast('🔕 Notifications bloquées dans le navigateur');
+    }
+  } else if(enabled){
+    r.enabled = false; toast('🔕 Notifications non supportées ici');
+  }
+  saveReminder(r); renderReminderUI(); setupReminders();
+}
+function saveReminderTime(val){ const r = getReminder(); r.time = val || '18:00'; saveReminder(r); setupReminders(); }
+
+// Séance du jour faite (ou jour de repos / hors programme) → pas de rappel
+function todayDoneOrRest(){
+  const t = findTodayDay(); if(!t) return true;
+  const day = getProgram().find(w => w.w === t.w)?.days[t.dIdx];
+  if(!day) return true;
+  if(day.type === 'rest') return true;
+  return isDayComplete(t.w, t.dIdx, day);
+}
+function setupReminders(){
+  const r = getReminder();
+  if(!r.enabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+  try{
+    const [hh,mm] = (r.time||'18:00').split(':').map(Number);
+    const now = new Date();
+    const past = now.getHours() > hh || (now.getHours() === hh && now.getMinutes() >= mm);
+    const key = 'opm-reminded-' + now.toISOString().slice(0,10);
+    if(past && !todayDoneOrRest() && localStorage.getItem(key) !== '1'){
+      new Notification('Modeste Training 🥊', { body: "N'oublie pas ta séance du jour !" });
+      localStorage.setItem(key, '1');
+    }
+  }catch(e){}
+}
+function renderReminderUI(){
+  const r = getReminder();
+  const tog = document.getElementById('rem-toggle'); if(tog) tog.checked = !!r.enabled;
+  const row = document.getElementById('rem-time-row'); if(row) row.style.display = r.enabled ? 'flex' : 'none';
+  const timeEl = document.getElementById('rem-time'); if(timeEl) timeEl.value = r.time || '18:00';
+  const note = document.getElementById('rem-note');
+  if(note){
+    if(!('Notification' in window)) note.textContent = '⚠️ Notifications non supportées sur cet appareil.';
+    else if(Notification.permission === 'denied') note.textContent = '⚠️ Notifications bloquées dans les réglages du navigateur.';
+    else note.textContent = '';
+  }
+}
+
+// ═══════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════
 loadDB();
 renderTraining();
-setTimeout(()=>{ document.getElementById('wk1')?.classList.add('open'); },80);
+renderReminderUI();
+setupReminders();
+setTimeout(()=>{
+  // Ouvre et scrolle sur la semaine du jour (sinon Semaine 1 par défaut)
+  const t = findTodayDay();
+  const wNum = t ? t.w : 1;
+  const c = document.getElementById('wk'+wNum);
+  if(c){ c.classList.add('open'); c.querySelector('.week-hdr')?.setAttribute('aria-expanded','true'); }
+  if(t) document.getElementById(`dayrow-${t.w}-${t.dIdx}`)?.scrollIntoView({behavior:'smooth', block:'center'});
+},80);
 // Try to reconnect Google Drive silently
 window.addEventListener('load', () => {
   initGoogleDrive().then(() => trySilentReconnect());
@@ -1229,6 +1546,20 @@ window.addEventListener('load', () => {
   if(s1) observer.observe(s1, {childList:true, characterData:true, subtree:true});
 });
 </script>
+
+<!-- Minuteur de repos flottant -->
+<div id="rest-timer" class="rest-timer">
+  <div class="rest-panel" id="rest-panel">
+    <div class="rest-count" id="rest-count">0:00</div>
+    <div class="rest-presets">
+      <button onclick="startRest(30)">30s</button>
+      <button onclick="startRest(60)">1:00</button>
+      <button onclick="startRest(90)">1:30</button>
+      <button class="rest-stop" onclick="stopRest()" aria-label="Arrêter le minuteur">✕</button>
+    </div>
+  </div>
+  <button class="rest-fab" id="rest-fab" onclick="toggleRestPanel()" aria-label="Minuteur de repos">⏱️</button>
+</div>
 
 <div id="ios-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1a1a1a;border-top:1px solid #333;padding:14px 16px;font-family:sans-serif;">
   <div style="display:flex;align-items:center;gap:12px;max-width:500px;margin:0 auto;">
@@ -1255,27 +1586,10 @@ window.addEventListener('load', () => {
 </script>
 
 <script>
-// Service Worker for offline support
+// Service Worker — fichier réel servi depuis l'origine (obligatoire : register() refuse
+// les Blob URL). Chemins relatifs → offline réel y compris sur GitHub Pages.
 if ('serviceWorker' in navigator) {
-  const swCode = `
-    const CACHE = 'modeste-training-v1';
-    self.addEventListener('install', e => {
-      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/mdst-training/'])));
-    });
-    self.addEventListener('fetch', e => {
-      e.respondWith(
-        caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/')))
-      );
-    });
-    self.addEventListener('activate', e => {
-      e.waitUntil(caches.keys().then(keys =>
-        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-      ));
-    });
-  `;
-  const blob = new Blob([swCode], {type: 'application/javascript'});
-  const swURL = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swURL).catch(() => {});
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 </script>
 </body>
